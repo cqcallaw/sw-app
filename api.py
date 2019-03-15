@@ -16,7 +16,7 @@ class Users(Resource):
         query = conn.execute("select * from users")
         return [{ 'id': i[0], 'name': i[1]} for i in query.cursor.fetchall()]
 
-api.add_resource(Users, '/users')
+api.add_resource(Users, '/api/v1/users')
 
 if __name__ == "__main__":
     app.run()
