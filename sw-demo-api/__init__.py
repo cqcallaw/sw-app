@@ -3,30 +3,43 @@ import os
 from flask import Flask, g
 from flask_restful import Resource, Api
 from . import db, orm
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 
 class Users(Resource):
     def get(self):
         session_maker = db.get_session_maker()
         session = session_maker()
-        return [{ 'id': instance.id, 'name': instance.name} for instance in session.query(orm.User).order_by(orm.User.id)]
+        return [{ 'id': instance.id, 'name': instance.name} for instance in session.query(orm.User)]
 
 class User(Resource):
     def get(self, user_id):
-        # must sanitize input
-        return []
-
-class UserRoles(Resource):
-    def get(self, user_id):
-        # must sanitize input
-        return []
+        session_maker = db.get_session_maker()
+        session = session_maker()
+        result = session.query(orm.User).filter_by(id=user_id)
+        result = result[0] # assume one result; IDs should be primary keys
+        return {
+            'id': result.id,
+            'name': result.name,
+            'roles': [{ 'id': role.id, 'description': role.description } for role in result.roles]
+        }
 
 class Roles(Resource):
     def get(self):
-        return []
-        # conn = db_connect.connect()
-        # query = conn.execute("select * from roles")
-        # return [{ 'id': i[0], 'description': i[1]} for i in query.cursor.fetchall()]
+        session_maker = db.get_session_maker()
+        session = session_maker()
+        return [{ 'id': instance.id, 'description': instance.description} for instance in session.query(orm.Role)]
+
+class Role(Resource):
+    def get(self, role_id):
+        session_maker = db.get_session_maker()
+        session = session_maker()
+        result = session.query(orm.Role).filter_by(id=role_id)
+        result = result[0] # assume one result; IDs should be primary keys
+        return {
+            'id': result.id,
+            'description': result.description,
+            'members': [{ 'id': user.id, 'name': user.name } for user in result.users]
+        }
 
 def create_app(test_config=None):
     # create and configure the app
@@ -54,7 +67,7 @@ def create_app(test_config=None):
     api = Api(app)
     api.add_resource(Users, '/api/v1/users')
     api.add_resource(User, '/api/v1/users/<string:user_id>')
-    api.add_resource(UserRoles, '/api/v1/users/<string:user_id>/roles')
     api.add_resource(Roles, '/api/v1/roles')
+    api.add_resource(Role, '/api/v1/roles/<string:role_id>')
 
     return app
