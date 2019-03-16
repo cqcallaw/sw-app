@@ -15,13 +15,15 @@ class User(Resource):
     def get(self, user_id):
         session_maker = db.get_session_maker()
         session = session_maker()
-        result = session.query(orm.User).filter_by(id=user_id)
-        result = result[0] # assume one result; IDs should be primary keys
-        return {
-            'id': result.id,
-            'name': result.name,
-            'roles': [{ 'id': role.id, 'description': role.description } for role in result.roles]
-        }
+        result = session.query(orm.User).filter_by(id=user_id).first()
+        if result:
+            return {
+                'id': result.id,
+                'name': result.name,
+                'roles': [{ 'id': role.id, 'description': role.description } for role in result.roles]
+            }
+        else:
+            return ('Unknown user', 404)
 
 class Roles(Resource):
     def get(self):
@@ -33,13 +35,15 @@ class Role(Resource):
     def get(self, role_id):
         session_maker = db.get_session_maker()
         session = session_maker()
-        result = session.query(orm.Role).filter_by(id=role_id)
-        result = result[0] # assume one result; IDs should be primary keys
-        return {
-            'id': result.id,
-            'description': result.description,
-            'members': [{ 'id': user.id, 'name': user.name } for user in result.users]
-        }
+        result = session.query(orm.Role).filter_by(id=role_id).first()
+        if result:
+            return {
+                'id': result.id,
+                'description': result.description,
+                'members': [{ 'id': user.id, 'name': user.name } for user in result.users]
+            }
+        else:
+            return ('Unknown role', 404)
 
 def create_app(test_config=None):
     # create and configure the app
