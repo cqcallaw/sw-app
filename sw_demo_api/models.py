@@ -1,8 +1,10 @@
-from sw_demo_api import db
-from sqlalchemy import ForeignKey, Column, Integer, Unicode
+""" SW Demo REST API database models """
+from sqlalchemy import ForeignKey, Column, Unicode
 from sqlalchemy.orm import relationship
+from sw_demo_api import db
 
 class Role(db.Model):
+    """ DB model for user role """
     __tablename__ = 'roles'
 
     id = Column(Unicode, primary_key=True)
@@ -16,6 +18,7 @@ class Role(db.Model):
         return "<Role(id='%s', description='%s')>" % (self.id, self.description)
 
 class User(db.Model):
+    """ DB model for user """
     __tablename__ = 'users'
 
     id = Column(Unicode, primary_key=True)
@@ -29,6 +32,7 @@ class User(db.Model):
         return "<User(id='%s', name='%s')>" % (self.id, self.name)
 
 class UserRoles(db.Model):
+    """ DB model for M:N relationship between users and roles """
     __tablename__ = 'user_roles'
 
     role_id = Column(Unicode, ForeignKey('roles.id'), primary_key=True)

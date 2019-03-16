@@ -1,11 +1,8 @@
+""" SW Demo REST API """
 import os
 import flask
-import flask_restless
 from flask_sqlalchemy import SQLAlchemy
-
-# from sqlalchemy.ext.declarative import declarative_base, declared_attr
-# from sqlalchemy.orm import sessionmaker, scoped_session
-# from sqlalchemy import *
+import flask_restless
 
 app = flask.Flask(__name__)
 
@@ -33,32 +30,35 @@ from .controllers import role_api_blueprint, user_api_blueprint
 app.register_blueprint(role_api_blueprint)
 app.register_blueprint(user_api_blueprint)
 
-# populate DB with sample data
+sample_data_init()
 
-admin_role = Role(id='admin', description='Administrators')
-user_role = Role(id='users', description='users')
+def sample_data_init():
+    """ populate DB with sample data """
 
-admin_user = User(id='admin', name='The Administrator')
-admin_user.roles.append(admin_role)
-admin_user.roles.append(user_role)
+    admin_role = Role(id='admin', description='Administrators')
+    user_role = Role(id='users', description='users')
 
-plain_user = User(id='user', name='A user')
-plain_user.roles.append(user_role)
+    admin_user = User(id='admin', name='The Administrator')
+    admin_user.roles.append(admin_role)
+    admin_user.roles.append(user_role)
 
-alice = User(id='alice', name='Alice')
-alice.roles.append(user_role)
+    plain_user = User(id='user', name='A user')
+    plain_user.roles.append(user_role)
 
-bob = User(id='bob', name='Bob')
-bob.roles.append(user_role)
+    alice = User(id='alice', name='Alice')
+    alice.roles.append(user_role)
 
-eve = User(id='eve', name='Eve')
-eve.roles.append(user_role)
+    bob = User(id='bob', name='Bob')
+    bob.roles.append(user_role)
 
-db.session.add(admin_role)
-db.session.add(user_role)
-db.session.add(admin_user)
-db.session.add(plain_user)
-db.session.add(alice)
-db.session.add(bob)
-db.session.add(eve)
-db.session.commit()
+    eve = User(id='eve', name='Eve')
+    eve.roles.append(user_role)
+
+    db.session.add(admin_role)
+    db.session.add(user_role)
+    db.session.add(admin_user)
+    db.session.add(plain_user)
+    db.session.add(alice)
+    db.session.add(bob)
+    db.session.add(eve)
+    db.session.commit()
