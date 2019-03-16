@@ -1,11 +1,13 @@
 from sw_demo_api import db
+from sqlalchemy import ForeignKey, Column, Integer, Unicode
+from sqlalchemy.orm import relationship
 
 class Role(db.Model):
     __tablename__ = 'roles'
 
-    id = db.Column(db.Unicode, primary_key=True)
-    description = db.Column(db.Unicode)
-    users = db.relationship(
+    id = Column(Unicode, primary_key=True)
+    description = Column(Unicode)
+    users = relationship(
         'User',
         secondary='user_roles'
     )
@@ -16,9 +18,9 @@ class Role(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Unicode, primary_key=True)
-    name = db.Column(db.Unicode)
-    roles = db.relationship(
+    id = Column(Unicode, primary_key=True)
+    name = Column(Unicode)
+    roles = relationship(
         'Role',
         secondary='user_roles'
     )
@@ -29,8 +31,8 @@ class User(db.Model):
 class UserRoles(db.Model):
     __tablename__ = 'user_roles'
 
-    role_id = db.Column(db.String, db.ForeignKey('roles.id'), primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('users.id'), primary_key=True)
+    role_id = Column(Unicode, ForeignKey('roles.id'), primary_key=True)
+    user_id = Column(Unicode, ForeignKey('users.id'), primary_key=True)
 
     def __repr__(self):
         return "<UserRole(role_id='%s', user_id='%s')>" % (self.role_id, self.user_id)
