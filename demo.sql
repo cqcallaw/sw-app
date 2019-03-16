@@ -20,7 +20,7 @@ CREATE TABLE user_roles (
     FOREIGN KEY(role_id) REFERENCES role(role_id)
 );
 
-INSERT INTO roles (role_id, description) VALUES ('admin', 'Administrator Role');
+INSERT INTO roles (role_id, description) VALUES ('admin', 'Administrators');
 INSERT INTO roles (role_id, description) VALUES ('user', 'Users');
 
 INSERT INTO users (user_id, name) VALUES ('alice', 'Alice');
