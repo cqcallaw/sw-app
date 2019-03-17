@@ -2,9 +2,12 @@
 import os
 import flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 import flask_restless
 
 app = flask.Flask(__name__)
+
+BCRYPT_HANDLE = Bcrypt(app)
 
 # Create our SQLAlchemy DB engine
 db_path = 'sw_demo_api.sqlite'
@@ -30,29 +33,23 @@ from .controllers import role_api_blueprint, user_api_blueprint
 app.register_blueprint(role_api_blueprint)
 app.register_blueprint(user_api_blueprint)
 
-sample_data_init()
-
 def sample_data_init():
     """ populate DB with sample data """
 
     admin_role = Role(id='admin', description='Administrators')
     user_role = Role(id='users', description='users')
 
-    admin_user = User(id='admin', name='The Administrator')
-    admin_user.roles.append(admin_role)
-    admin_user.roles.append(user_role)
+    admin_user = User(
+        id='admin',
+        name='The Administrator',
+        password='admin',
+        roles = [admin_role, user_role]
+    )
 
-    plain_user = User(id='user', name='A user')
-    plain_user.roles.append(user_role)
-
-    alice = User(id='alice', name='Alice')
-    alice.roles.append(user_role)
-
-    bob = User(id='bob', name='Bob')
-    bob.roles.append(user_role)
-
-    eve = User(id='eve', name='Eve')
-    eve.roles.append(user_role)
+    plain_user = User(id='user', name='A user', password='user', roles= [user_role])
+    alice = User(id='alice', name='Alice', password='a', roles=[user_role])
+    bob = User(id='bob', name='Bob', password='b', roles=[user_role])
+    eve = User(id='eve', name='Eve', password='e', roles=[user_role])
 
     db.session.add(admin_role)
     db.session.add(user_role)
@@ -62,3 +59,6 @@ def sample_data_init():
     db.session.add(bob)
     db.session.add(eve)
     db.session.commit()
+
+sample_data_init()
+

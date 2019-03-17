@@ -1,7 +1,7 @@
 """ SW Demo REST API database models """
 from sqlalchemy import ForeignKey, Column, Unicode
 from sqlalchemy.orm import relationship
-from sw_demo_api import db
+from sw_demo_api import db, BCRYPT_HANDLE
 
 class Role(db.Model):
     """ DB model for user role """
@@ -23,10 +23,17 @@ class User(db.Model):
 
     id = Column(Unicode, primary_key=True)
     name = Column(Unicode)
+    password = Column(Unicode, nullable=False)
     roles = relationship(
         'Role',
         secondary='user_roles'
     )
+
+    def __init__(self, id, name, password, roles):
+        self.id = id
+        self.name = name
+        self.password = BCRYPT_HANDLE.generate_password_hash(password).decode()
+        self.roles = roles
 
     def __repr__(self):
         return "<User(id='%s', name='%s')>" % (self.id, self.name)
