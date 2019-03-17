@@ -1,16 +1,15 @@
-import requests
-import json
+""" Sample user update addition """
 import logging
+import requests
 
 logging.basicConfig(level=logging.DEBUG)
 
-url = 'http://127.0.0.1:5000/api/users/alice'
-headers = {'Content-Type': 'application/json'}
-
-user = {
-    'name': 'New Alice',
-}
-
-response = requests.patch(url, json=user, headers=headers)
+response = requests.patch(
+    'http://127.0.0.1:5000/api/users/alice',
+    headers={'Content-Type': 'application/json'},
+    json={
+        'name': 'New Alice',
+    }
+)
 assert response.ok
 print(response.json())

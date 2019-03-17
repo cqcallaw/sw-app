@@ -1,5 +1,5 @@
 """ SW Demo REST API database models """
-from sqlalchemy import ForeignKey, Column, Unicode, Integer
+from sqlalchemy import ForeignKey, Column, Unicode
 from sqlalchemy.orm import relationship
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
