@@ -1,9 +1,9 @@
 """ SW Demo REST API database models """
 from sqlalchemy import ForeignKey, Column, Unicode
 from sqlalchemy.orm import relationship
-from sw_demo_api import db, BCRYPT_HANDLE
+from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
-class Role(db.Model):
+class Role(DATABASE_INSTANCE.Model):
     """ DB model for user role """
     __tablename__ = 'roles'
 
@@ -17,7 +17,7 @@ class Role(db.Model):
     def __repr__(self):
         return "<Role(id='%s', description='%s')>" % (self.id, self.description)
 
-class User(db.Model):
+class User(DATABASE_INSTANCE.Model):
     """ DB model for user """
     __tablename__ = 'users'
 
@@ -38,7 +38,7 @@ class User(db.Model):
     def __repr__(self):
         return "<User(id='%s', name='%s')>" % (self.user_id, self.name)
 
-class UserRoles(db.Model):
+class UserRoles(DATABASE_INSTANCE.Model):
     """ DB model for M:N relationship between users and roles """
     __tablename__ = 'user_roles'
 
