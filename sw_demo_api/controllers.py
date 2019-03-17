@@ -8,7 +8,11 @@ def init(app):
     with app.app_context():
         manager = flask_restless.APIManager(app, flask_sqlalchemy_db=DATABASE_INSTANCE)
 
-        role_api_blueprint = manager.create_api_blueprint(Role, methods=['GET', 'PATCH', 'POST'])
+        role_api_blueprint = manager.create_api_blueprint(
+            Role,
+            methods=['GET', 'PATCH', 'POST'],
+            include_columns=['role_id', 'description']
+        )
         user_api_blueprint = manager.create_api_blueprint(
             User,
             methods=['GET', 'PATCH', 'POST'],
