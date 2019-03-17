@@ -12,8 +12,20 @@ def init(app):
         user_api_blueprint = manager.create_api_blueprint(
             User,
             methods=['GET', 'PATCH', 'POST'],
-            include_columns=['user_id', 'name', 'roles']
+            include_columns=['user_id', 'name', 'roles'],
+            preprocessors={
+                'PATCH_SINGLE': [check_auth],
+                'PATCH_MANY': [check_auth_many]
+            }
         )
 
         app.register_blueprint(role_api_blueprint)
         app.register_blueprint(user_api_blueprint)
+
+def check_auth_many(search_params=None, data=None, **kw):
+    """ Check authentication status """
+    raise flask_restless.ProcessingException(description='Not Authorized', code=401)
+
+def check_auth(instance_id=None, data=None, **kw):
+    """ Check authentication status """
+    raise flask_restless.ProcessingException(description='Not Authorized', code=401)
