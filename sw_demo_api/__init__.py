@@ -29,27 +29,27 @@ db.create_all()
 
 manager = flask_restless.APIManager(app, flask_sqlalchemy_db=db)
 
-from .controllers import role_api_blueprint, user_api_blueprint
-app.register_blueprint(role_api_blueprint)
-app.register_blueprint(user_api_blueprint)
+from .controllers import ROLE_API_BLUEPRINT, USER_API_BLUEPRINT
+app.register_blueprint(ROLE_API_BLUEPRINT)
+app.register_blueprint(USER_API_BLUEPRINT)
 
 def sample_data_init():
     """ populate DB with sample data """
 
-    admin_role = Role(id='admin', description='Administrators')
-    user_role = Role(id='users', description='users')
+    admin_role = Role(role_id='admin', description='Administrators')
+    user_role = Role(role_id='users', description='users')
 
     admin_user = User(
-        id='admin',
+        user_id='admin',
         name='The Administrator',
         password='admin',
-        roles = [admin_role, user_role]
+        roles=[admin_role, user_role]
     )
 
-    plain_user = User(id='user', name='A user', password='user', roles= [user_role])
-    alice = User(id='alice', name='Alice', password='a', roles=[user_role])
-    bob = User(id='bob', name='Bob', password='b', roles=[user_role])
-    eve = User(id='eve', name='Eve', password='e', roles=[user_role])
+    plain_user = User(user_id='user', name='A user', password='user', roles=[user_role])
+    alice = User(user_id='alice', name='Alice', password='a', roles=[user_role])
+    bob = User(user_id='bob', name='Bob', password='b', roles=[user_role])
+    eve = User(user_id='eve', name='Eve', password='e', roles=[user_role])
 
     db.session.add(admin_role)
     db.session.add(user_role)
@@ -61,4 +61,3 @@ def sample_data_init():
     db.session.commit()
 
 sample_data_init()
-
