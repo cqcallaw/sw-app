@@ -1,5 +1,5 @@
 """ SW Demo REST API database models """
-from sqlalchemy import ForeignKey, Column, Unicode
+from sqlalchemy import ForeignKey, Column, Unicode, Integer
 from sqlalchemy.orm import relationship
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
@@ -7,6 +7,7 @@ class Role(DATABASE_INSTANCE.Model):
     """ DB model for user role """
     __tablename__ = 'roles'
 
+    # key = Column(Integer, primary_key=True)
     role_id = Column(Unicode, primary_key=True)
     description = Column(Unicode)
     users = relationship(
@@ -21,6 +22,7 @@ class User(DATABASE_INSTANCE.Model):
     """ DB model for user """
     __tablename__ = 'users'
 
+    # key = Column(Integer, primary_key=True)
     user_id = Column(Unicode, primary_key=True)
     name = Column(Unicode)
     password = Column(Unicode, nullable=False)
@@ -29,11 +31,11 @@ class User(DATABASE_INSTANCE.Model):
         secondary='user_roles'
     )
 
-    def __init__(self, user_id, name, password, roles):
-        self.user_id = user_id
-        self.name = name
-        self.password = BCRYPT_HANDLE.generate_password_hash(password).decode()
-        self.roles = roles
+    # def __init__(self, user_id, name, password, roles):
+    #     self.user_id = user_id
+    #     self.name = name
+    #     self.password = BCRYPT_HANDLE.generate_password_hash(password).decode()
+    #     self.roles = roles
 
     def __repr__(self):
         return "<User(id='%s', name='%s')>" % (self.user_id, self.name)
