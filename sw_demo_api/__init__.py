@@ -29,16 +29,7 @@ def create_app(test_config=None):
 
     sw_demo_api.extensions.register_extensions(app)
 
-    if app.config['DB_PURGE']:
-        db_path = app.config['DATABASE_NAME']
-        db_file_system_path = os.path.realpath(os.path.join('sw_demo_api', db_path))
-        if os.path.exists(db_file_system_path):
-            os.remove(db_file_system_path)
-
     sw_demo_api.db.init(app)
-
-    if app.config['SAMPLE_DATA']:
-        sw_demo_api.db.gen_sample_data(app)
 
     sw_demo_api.controllers.init(app)
 

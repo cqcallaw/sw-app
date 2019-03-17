@@ -1,11 +1,21 @@
 """ Database helpers """
-from sw_demo_api.models import User, Role, UserRoles
+import os
+from sw_demo_api.models import User, Role
 from sw_demo_api.extensions import DATABASE_INSTANCE
 
 def init(app):
     """ Init DB """
+    if app.config['DB_PURGE']:
+        db_path = app.config['DATABASE_NAME']
+        db_file_system_path = os.path.realpath(os.path.join('sw_demo_api', db_path))
+        if os.path.exists(db_file_system_path):
+            os.remove(db_file_system_path)
+
     with app.app_context():
         DATABASE_INSTANCE.create_all()
+
+    if app.config['SAMPLE_DATA']:
+        gen_sample_data(app)
 
 def gen_sample_data(app):
     """ Populate database with sample data """
