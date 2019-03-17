@@ -24,6 +24,7 @@ class User(DATABASE_INSTANCE.Model):
     user_id = Column(Unicode, primary_key=True)
     name = Column(Unicode)
     password = Column(Unicode, nullable=False)
+    auth_token = Column(Unicode)
     roles = relationship(
         'Role',
         secondary='user_roles'

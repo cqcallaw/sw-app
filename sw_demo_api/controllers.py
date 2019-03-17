@@ -20,9 +20,19 @@ def init(app):
             methods=['GET', 'PATCH', 'POST'],
             include_columns=['user_id', 'name', 'roles'],
             preprocessors={
-                'PATCH_SINGLE': [lambda instance_id, data, **kwargs: check_auth(app, instance_id, data, **kwargs)],
-                'PATCH_MANY': [lambda search_params, data, **kwargs: check_auth_many(app, search_params, data, **kwargs)]
+                'PATCH_SINGLE': [
+                    lambda instance_id, data, **kw: check_auth(app, instance_id, data, **kw)
+                ],
+                'PATCH_MANY': [
+                    lambda search_params, data, **kw: check_auth_many(app, search_params, data, **kw)
+                ]
+            },
+            postprocessors={
+                'POST': [
+                    lambda result, **kw: create_user_auth_token(app, result, **kw)
+                ],
             }
+
         )
 
         app.register_blueprint(role_api_blueprint)
@@ -35,6 +45,22 @@ def check_auth_many(app, search_params=None, data=None, **kwargs):
 def check_auth(app, instance_id=None, data=None, **kw):
     """ Check authentication status """
     raise flask_restless.ProcessingException(description='Not Authorized', code=401)
+
+def create_user_auth_token(app, result=None, **kw):
+    """
+    Add user auth token to response
+
+    We do this as post-processing so it will be included in the response even though auth tokens shouldn't ordinarily be part of user views
+    """
+    auth_token = encode_auth_token(app, result['user_id'])
+    if auth_token:
+        user = DATABASE_INSTANCE.session.query(User).filter(User.user_id == result['user_id']).first()
+        user.auth_token = auth_token.decode()
+        DATABASE_INSTANCE.session.commit()
+        result['auth_token'] = auth_token.decode()
+    else:
+        app.logger.error('Failed to create user auth token!')
+        raise flask_restless.ProcessingException(description='Failed to create auth token!', code=500)
 
 def encode_auth_token(app, user_id):
     """
