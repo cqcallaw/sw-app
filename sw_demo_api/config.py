@@ -28,3 +28,4 @@ class Testing(Development):
     SAMPLE_DATA = True
     DATABASE_NAME = 'testing_' + BASE_DATABASE_NAME
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_NAME
+    PRESERVE_CONTEXT_ON_EXCEPTION = False # ref: https://stackoverflow.com/a/28139033/577298
