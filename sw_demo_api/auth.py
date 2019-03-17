@@ -1,16 +1,11 @@
-""" Auth Blueprint """
-# import functools
-# from flask import (
-#     Blueprint, flash, g, redirect, render_template, request, session, url_for
-# )
-# from werkzeug.security import check_password_hash, generate_password_hash
+""" Authentication """
 import datetime
 import jwt
 from flask import current_app, request, make_response, jsonify
 from sw_demo_api.models import User
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
-def login_handler():
+def login_handler():  # pylint: disable=too-many-return-statements
     """ Handle Login POST """
     if 'Content-Type' not in request.headers:
         response = {
@@ -31,7 +26,7 @@ def login_handler():
     if content_type != 'application/json':
         response = {
             'status': 'fail',
-            'message': 'Login submission content type ' + content_type + ' unsupported; must be application/json.'
+            'message': 'Content type %s unsupported; must be application/json.' % content_type
         }
         return make_response(jsonify(response)), 400
 

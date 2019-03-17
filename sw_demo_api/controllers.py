@@ -23,7 +23,7 @@ def init(app):
                     lambda instance_id, data, **kw: check_auth(app, instance_id, data, **kw)
                 ],
                 'PATCH_MANY': [
-                    lambda search_params, data, **kw: check_auth_many(app, search_params, data, **kw)
+                    lambda params, data, **kw: check_auth_many(app, params, data, **kw)
                 ]
             },
             postprocessors={
@@ -47,18 +47,22 @@ def check_auth(app, instance_id=None, data=None, **kw):
     """ Check authentication status """
     raise flask_restless.ProcessingException(description='Not Authorized', code=401)
 
-def create_user_auth_token(app, result=None, **kw):
+def create_user_auth_token(app, result=None, **kw): # pylint: disable=unused-argument
     """
     Add user auth token to response
 
-    We do this as post-processing so it will be included in the response even though auth tokens shouldn't ordinarily be part of user views
+    We do this as post-processing so it will be included in the response
+    even though auth tokens shouldn't ordinarily be part of user views
     """
     auth_token = encode_auth_token(app, result['user_id'])
     if auth_token:
-        user = DATABASE_INSTANCE.session.query(User).filter(User.user_id == result['user_id']).first()
+        user = User.query.filter(User.user_id == result['user_id']).first()
         user.auth_token = auth_token.decode()
         DATABASE_INSTANCE.session.commit()
         result['auth_token'] = auth_token.decode()
     else:
         app.logger.error('Failed to create user auth token!')
-        raise flask_restless.ProcessingException(description='Failed to create auth token!', code=500)
+        raise flask_restless.ProcessingException(
+            description='Failed to create auth token!',
+            code=500
+        )
