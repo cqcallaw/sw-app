@@ -1,0 +1,2 @@
+oracle.brainvitamins.net
+slave1.brainvitamins.net
