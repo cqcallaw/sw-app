@@ -7,7 +7,9 @@ def init(app):
     with app.app_context():
         DATABASE_INSTANCE.create_all()
 
-        # populate DB with sample data
+def gen_sample_data(app):
+    """ Populate database with sample data """
+    with app.app_context():
         admin_role = Role(role_id='admin', description='Administrators')
         user_role = Role(role_id='users', description='users')
 
