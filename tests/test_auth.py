@@ -6,10 +6,25 @@ from tests.base import BaseTestCase
 
 class TestAuth(BaseTestCase):
     """ Test authentication """
-    def test_malformed_login(self):
-        """ Test for malformed """
+    def test_wrong_content_type(self):
+        """ Test for wrong content type """
         response = self.client.post(
             '/api/auth/login',
+            data=''
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json
+        self.assertEqual(
+            data['message'],
+            'Login submission does not specific content type (must be application/json).'
+        )
+
+    def test_malformed_login(self):
+        """ Test for malformed submission """
+        response = self.client.post(
+            '/api/auth/login',
+            content_type='application/json',
             data=json.dumps(
                 {
                     'whatever': 'nemo',
@@ -26,6 +41,7 @@ class TestAuth(BaseTestCase):
         """ Test for invalid user """
         response = self.client.post(
             '/api/auth/login',
+            content_type='application/json',
             data=json.dumps(
                 {
                     'user_id': 'nemo',
@@ -42,6 +58,7 @@ class TestAuth(BaseTestCase):
         """ Test for invalid password """
         response = self.client.post(
             '/api/auth/login',
+            content_type='application/json',
             data=json.dumps(
                 {
                     'user_id': 'user',
@@ -58,6 +75,7 @@ class TestAuth(BaseTestCase):
         """ Test for valid login user """
         response = self.client.post(
             '/api/auth/login',
+            content_type='application/json',
             data=json.dumps(
                 {
                     'user_id': 'user',

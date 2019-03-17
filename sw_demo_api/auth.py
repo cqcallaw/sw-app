@@ -12,6 +12,29 @@ from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
 def login_handler():
     """ Handle Login POST """
+    if 'Content-Type' not in request.headers:
+        response = {
+            'status': 'fail',
+            'message': 'Content type must be specified.'
+        }
+        return make_response(jsonify(response)), 400
+
+    content_type = request.headers['Content-Type']
+
+    if not content_type:
+        response = {
+            'status': 'fail',
+            'message': 'Login submission does not specific content type (must be application/json).'
+        }
+        return make_response(jsonify(response)), 400
+
+    if content_type != 'application/json':
+        response = {
+            'status': 'fail',
+            'message': 'Login submission content type ' + content_type + ' unsupported; must be application/json.'
+        }
+        return make_response(jsonify(response)), 400
+
     post_data = request.get_json()
 
     if not post_data:
@@ -50,7 +73,7 @@ def login_handler():
         }
         return make_response(jsonify(response)), 400
 
-    auth_token = encode_auth_token(current_app, user.id)
+    auth_token = encode_auth_token(current_app, user.user_id)
     if not auth_token:
         response = {
             'status': 'fail',
