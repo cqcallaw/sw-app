@@ -11,6 +11,7 @@ class BaseConfig:
     BCRYPT_LOG_ROUNDS = 13
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DB_PURGE = False
+    SAMPLE_DATA = False
     DATABASE_NAME = BASE_DATABASE_NAME
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_NAME
 
@@ -19,9 +20,11 @@ class Development(BaseConfig):
     BCRYPT_LOG_ROUNDS = 4
     DEBUG = True
     DB_PURGE = True
+    SAMPLE_DATA = True
 
 class Testing(Development):
     """Testing configuration."""
     TESTING = True
+    SAMPLE_DATA = True
     DATABASE_NAME = 'testing_' + BASE_DATABASE_NAME
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_NAME

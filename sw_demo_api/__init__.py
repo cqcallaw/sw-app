@@ -36,6 +36,10 @@ def create_app(test_config=None):
             os.remove(db_file_system_path)
 
     sw_demo_api.db.init(app)
+
+    if app.config['SAMPLE_DATA']:
+        sw_demo_api.db.gen_sample_data(app)
+
     sw_demo_api.controllers.init(app)
 
     return app

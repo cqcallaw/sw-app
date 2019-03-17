@@ -2,7 +2,6 @@
 import os
 from flask_testing import TestCase
 from sw_demo_api import create_app
-from sw_demo_api.db import gen_sample_data
 
 class BaseTestCase(TestCase):
     """ Base Tests """
@@ -14,7 +13,6 @@ class BaseTestCase(TestCase):
     def create_app(self):
         os.environ['APP_SETTINGS'] = 'sw_demo_api.config.Testing'
         self.app_instance = create_app()
-        gen_sample_data(self.app_instance)
         return self.app_instance
 
     def setUp(self):
