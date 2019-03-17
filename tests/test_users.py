@@ -32,9 +32,8 @@ class TestUser(BaseTestCase):
         self.assertIn('auth_token', response_data)
         self.assertIsNotNone(response_data['auth_token'])
 
-
-    def test_modify_user(self):
-        """ Test basic user PATCH """
+    def test_modify_user_no_login(self):
+        """ Test basic user PATCH, no auth"""
         data = {'name': 'New Alice'}
 
         response = self.client.patch(
@@ -42,5 +41,4 @@ class TestUser(BaseTestCase):
             data=json.dumps(data),
             content_type='application/json',
         )
-
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 401)
