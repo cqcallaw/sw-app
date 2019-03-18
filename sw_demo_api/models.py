@@ -1,6 +1,7 @@
 """ SW Demo REST API database models """
 # pylint: disable=too-few-public-methods
-from sqlalchemy import ForeignKey, Column, Unicode
+import datetime
+from sqlalchemy import ForeignKey, Column, Unicode, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
@@ -37,6 +38,8 @@ class User(DATABASE_INSTANCE.Model):
         self.password = BCRYPT_HANDLE.generate_password_hash(password).decode()
         if 'roles' in kwargs:
             self.roles = kwargs['roles']
+        if 'blacklisted_tokens' in kwargs:
+            self.blacklisted_tokens = kwargs['blacklisted_tokens']
 
     def __repr__(self):
         return "<User(id='%s', name='%s')>" % (self.user_id, self.name)
@@ -50,3 +53,18 @@ class UserRoles(DATABASE_INSTANCE.Model):
 
     def __repr__(self):
         return "<UserRole(role_id='%s', user_id='%s')>" % (self.role_id, self.user_id)
+
+class BlacklistToken(DATABASE_INSTANCE.Model):
+    """ DB model for black listed authentication tokens """
+    __tablename__ = 'blacklist_tokens'
+
+    blacklist_id = Column(Integer, primary_key=True, autoincrement=True)
+    token = Column(String(500), unique=True, nullable=False)
+    blacklisted_on = Column(DateTime, nullable=False)
+
+    def __init__(self, token):
+        self.token = token
+        self.blacklisted_on = datetime.datetime.now()
+
+    def __repr__(self):
+        return "<BlacklistToken(token='%s'>" % self.token

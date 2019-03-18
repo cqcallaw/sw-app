@@ -3,7 +3,7 @@ import datetime
 import re
 import jwt
 from flask import current_app, request, make_response, jsonify
-from sw_demo_api.models import User
+from sw_demo_api.models import User, BlacklistToken
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
 def login_handler():  # pylint: disable=too-many-return-statements
@@ -106,20 +106,25 @@ def logout_handler():
         return make_response(jsonify(response)), 400
 
     auth_token = auth_token_match.group(1)
-    decode_token_result = decode_auth_token(current_app.config['SECRET_KEY'], auth_token)
-    if isinstance(decode_token_result, str):
+    decoded_token, decode_token_error = decode_auth_token(
+        current_app.config['SECRET_KEY'],
+        auth_token
+    )
+    if decode_token_error:
         response = {
             'status': 'fail',
-            'message': decode_token_result
+            'message': decode_token_error
         }
         return make_response(jsonify(response)), 400
 
-
+    blacklist_token = BlacklistToken(token=decoded_token)
+    DATABASE_INSTANCE.session.add(blacklist_token)
+    DATABASE_INSTANCE.session.commit()
     response = {
-        'status': 'fail',
-        'message': 'Failed to log out.'
+        'status': 'success',
+        'message': 'Log out successful.'
     }
-    return make_response(jsonify(response)), 500
+    return make_response(jsonify(response)), 200
 
 def encode_auth_token(secret_key, user_id):
     """
@@ -141,12 +146,12 @@ def decode_auth_token(secret_key, auth_token):
     """
     Decodes the auth token
     :param auth_token:
-    :return: integer|string
+    :return: integer?, string?
     """
     try:
         payload = jwt.decode(auth_token, secret_key)
-        return payload['sub']
+        return payload['sub'], None
     except jwt.ExpiredSignatureError:
-        return 'Signature expired. Please log in again.'
+        return None, 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
-        return 'Invalid token. Please log in again.'
+        return None, 'Invalid token. Please log in again.'
