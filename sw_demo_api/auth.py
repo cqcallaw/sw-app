@@ -114,11 +114,11 @@ def logout_handler():
 def process_auth_header(secret_key: str, auth_header):
     """ Decode an Authorization header into a JWT token data, or return an error """
     if not auth_header:
-        return None, None, 'Logout requires Authorization header.', 400
+        return None, None, 'Operation requires Authorization header.', 400
 
     auth_token_match = re.match('Bearer (.*)', auth_header)
     if not auth_token_match:
-        return None, None, 'Logout requires valid auth token in Authorization header.', 400
+        return None, None, 'Operation requires valid auth token in Authorization header.', 400
 
     auth_token = auth_token_match.group(1)
     decoded_token, decode_token_error = decode_auth_token(

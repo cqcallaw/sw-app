@@ -97,7 +97,7 @@ class TestLogout(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
         data = response.json
-        self.assertEqual(data['message'], 'Logout requires Authorization header.')
+        self.assertEqual(data['message'], 'Operation requires Authorization header.')
 
 
     def test_invalid_auth_header(self):
@@ -111,7 +111,7 @@ class TestLogout(BaseTestCase):
         data = response.json
         self.assertEqual(
             data['message'],
-            'Logout requires valid auth token in Authorization header.'
+            'Operation requires valid auth token in Authorization header.'
         )
 
     def test_invalid_auth_token(self):

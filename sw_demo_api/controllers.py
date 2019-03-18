@@ -13,7 +13,18 @@ def init(app):
         role_api_blueprint = manager.create_api_blueprint(
             Role,
             methods=['GET', 'PATCH', 'POST'],
-            include_columns=['role_id', 'description']
+            include_columns=['role_id', 'description'],
+            preprocessors={
+                'POST': [
+                    lambda data, **kw: check_role_mod(app)
+                ],
+                'PATCH_SINGLE': [
+                    lambda instance_id, data, **kw: check_role_mod(app)
+                ],
+                'PATCH_MANY': [
+                    lambda params, data, **kw: check_role_mod(app)
+                ]
+            },
         )
         user_api_blueprint = manager.create_api_blueprint(
             User,
@@ -55,8 +66,18 @@ def init(app):
         app.add_url_rule('/api/auth/login', view_func=login_handler, methods=['POST'])
         app.add_url_rule('/api/auth/logout', view_func=logout_handler, methods=['POST'])
 
+def check_role_mod(app):
+    """ Check that current user can modify roles """
+    current_user = validate_current_user(
+        app.config['SECRET_KEY'],
+        request.headers.get('Authorization')
+    )
+    if not is_admin(current_user):
+        raise flask_restless.ProcessingException(description='Not Authorized', code=401)
+
 def check_user_mod_many(app, search_params=None, data=None, **kwargs):
     """ Check authentication status """
+    # TODO: check for is_admin
     raise flask_restless.ProcessingException(description='Not Authorized', code=401)
 
 def check_user_mod(app, instance_id=None, data=None, **kw): # pylint: disable=unused-argument
@@ -68,9 +89,27 @@ def check_user_mod(app, instance_id=None, data=None, **kw): # pylint: disable=un
     if not mod_subject:
         raise flask_restless.ProcessingException(description='Unknown subject', code=404)
 
-    _, decoded_token, error, error_code = process_auth_header(
+    current_user = validate_current_user(
         app.config['SECRET_KEY'],
         request.headers.get('Authorization')
+    )
+
+    if 'roles' in data:
+        if not is_admin(current_user):
+            raise flask_restless.ProcessingException(
+                description='Only admins may edit roles',
+                code=401
+            )
+    else:
+        # check general modification constraints
+        if not can_modify(current_user, mod_subject):
+            raise flask_restless.ProcessingException(description='Operation not allowed', code=401)
+
+def validate_current_user(secret_key, auth_header):
+    """ Validate current user """
+    _, decoded_token, error, error_code = process_auth_header(
+        secret_key,
+        auth_header
     )
     if error:
         raise flask_restless.ProcessingException(description=error, code=error_code)
@@ -84,15 +123,10 @@ def check_user_mod(app, instance_id=None, data=None, **kw): # pylint: disable=un
             code=400
         )
 
-    if 'roles' in data:
-        if not is_admin(current_user):
-            raise flask_restless.ProcessingException(description='Only admins may edit roles', code=401)
-    else:
-        # check general modification constraints
-        if not can_modify(current_user, mod_subject):
-            raise flask_restless.ProcessingException(description='Operation not allowed', code=401)
+    return current_user
 
 def is_admin(user: User):
+    """ Check if user is admin """
     for role in user.roles:
         if role.role_id == 'admin':
             return True
