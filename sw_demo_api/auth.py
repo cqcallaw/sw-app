@@ -94,42 +94,15 @@ def login_handler():  # pylint: disable=too-many-return-statements
 def logout_handler():
     """ Handle logout """
     auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        response = {
-            'status': 'fail',
-            'message': 'Logout requires Authorization header.'
-        }
-        return make_response(jsonify(response)), 400
-
-    auth_token_match = re.match('Bearer (.*)', auth_header)
-    if not auth_token_match:
-        response = {
-            'status': 'fail',
-            'message': 'Logout requires valid auth token in Authorization header.'
-        }
-        return make_response(jsonify(response)), 400
-
-    auth_token = auth_token_match.group(1)
-    decoded_token, decode_token_error = decode_auth_token(
+    encoded_token, _, error, error_code = process_auth_header(
         current_app.config['SECRET_KEY'],
-        auth_token
+        auth_header
     )
-    if decode_token_error:
-        response = {
-            'status': 'fail',
-            'message': decode_token_error
-        }
-        return make_response(jsonify(response)), 400
 
-    existing_blacklist_entry = BlacklistToken.query.filter_by(token=decoded_token).first()
-    if existing_blacklist_entry:
-        response = {
-            'status': 'fail',
-            'message': 'Token blacklisted. Please log in again.'
-        }
-        return make_response(jsonify(response)), 401
+    if error:
+        return make_response(jsonify({'status': 'fail', 'message': error})), error_code
 
-    blacklist_token = BlacklistToken(token=decoded_token)
+    blacklist_token = BlacklistToken(token=encoded_token)
     DATABASE_INSTANCE.session.add(blacklist_token)
     DATABASE_INSTANCE.session.commit()
     response = {
@@ -137,6 +110,29 @@ def logout_handler():
         'message': 'Log out successful.'
     }
     return make_response(jsonify(response)), 200
+
+def process_auth_header(secret_key: str, auth_header):
+    """ Decode an Authorization header into a JWT token data, or return an error """
+    if not auth_header:
+        return None, None, 'Logout requires Authorization header.', 400
+
+    auth_token_match = re.match('Bearer (.*)', auth_header)
+    if not auth_token_match:
+        return None, None, 'Logout requires valid auth token in Authorization header.', 400
+
+    auth_token = auth_token_match.group(1)
+    decoded_token, decode_token_error = decode_auth_token(
+        secret_key,
+        auth_token
+    )
+    if decode_token_error:
+        return None, None, decode_token_error, 400
+
+    existing_blacklist_entry = BlacklistToken.query.filter_by(token=auth_token).first()
+    if existing_blacklist_entry:
+        return None, None, 'Token blacklisted. Please log in again.', 401
+
+    return auth_token, decoded_token, None, 200
 
 def encode_auth_token(secret_key: str, timeout: int, user_id: str):
     """
@@ -155,13 +151,13 @@ def encode_auth_token(secret_key: str, timeout: int, user_id: str):
 
 def decode_auth_token(secret_key: str, auth_token):
     """
-    Decodes the auth token
+    Decode an auth token
     :param auth_token:
-    :return: integer?, string?
+    :return: Dict?, string?
     """
     try:
         payload = jwt.decode(auth_token, secret_key)
-        return payload['sub'], None
+        return payload, None
     except jwt.ExpiredSignatureError:
         return None, 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:
