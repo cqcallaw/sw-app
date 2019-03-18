@@ -89,7 +89,39 @@ class TestLogout(BaseTestCase):
         self.assertEqual(data['message'], 'Logout requires Authorization header.')
 
 
-    """ Test logout with malformed Authentication header """
+    def test_invalid_auth_header(self):
+        """ Test logout with malformed Authentication header """
+        response = self.client.post(
+            '/api/auth/logout',
+            headers=dict(
+                Authorization='Blah'
+            )
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json
+        self.assertEqual(
+            data['message'],
+            'Logout requires valid auth token in Authorization header.'
+        )
+
+    def test_invalid_auth_token(self):
+        """ Test logout for invalid token """
+        response = self.client.post(
+            '/api/auth/logout',
+            headers=dict(
+                Authorization='Bearer gobllegook'
+            )
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json
+        self.assertEqual(
+            data['message'],
+            'Invalid token. Please log in again.'
+        )
+
+    """ Test logout for blacklisted token """
     """ Test logout for invalid user """
     """ Test logout after timeout """
     """ Test double logout """

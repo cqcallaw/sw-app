@@ -1,6 +1,7 @@
 """ Authentication """
 import datetime
 import jwt
+import re
 from flask import current_app, request, make_response, jsonify
 from sw_demo_api.models import User
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
@@ -96,14 +97,24 @@ def logout_handler():
         }
         return make_response(jsonify(response)), 400
 
-    auth_token = auth_header.split(" ")[1]
-
-    if not auth_token:
+    auth_token_match = re.match('Bearer (.*)', auth_header)
+    if not auth_token_match:
         response = {
             'status': 'fail',
             'message': 'Logout requires valid auth token in Authorization header.'
         }
         return make_response(jsonify(response)), 400
+
+    auth_token = auth_token_match.group(1)
+    decode_token_result = decode_auth_token(current_app.config['SECRET_KEY'], auth_token)
+    if isinstance(decode_token_result, str):
+        response = {
+            'status': 'fail',
+            'message': decode_token_result
+        }
+        return make_response(jsonify(response)), 400
+
+
     response = {
         'status': 'fail',
         'message': 'Failed to log out.'
