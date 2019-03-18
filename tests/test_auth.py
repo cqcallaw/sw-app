@@ -93,9 +93,7 @@ class TestLogout(BaseTestCase):
         """ Test logout with malformed Authentication header """
         response = self.client.post(
             '/api/auth/logout',
-            headers=dict(
-                Authorization='Blah'
-            )
+            headers={'Authorization' : 'Blah'}
         )
 
         self.assertEqual(response.status_code, 400)
@@ -109,9 +107,7 @@ class TestLogout(BaseTestCase):
         """ Test logout for invalid token """
         response = self.client.post(
             '/api/auth/logout',
-            headers=dict(
-                Authorization='Bearer gobllegook'
-            )
+            headers={'Authorization' : 'Bearer gobllegook'}
         )
 
         self.assertEqual(response.status_code, 400)
@@ -132,9 +128,7 @@ class TestLogout(BaseTestCase):
 
         response = self.client.post(
             '/api/auth/logout',
-            headers=dict(
-                Authorization='Bearer ' + auth_token
-            )
+            headers={'Authorization' : 'Bearer ' + auth_token}
         )
         data = response.json
         self.assertEqual(data['status'], 'success')
@@ -155,9 +149,7 @@ class TestLogout(BaseTestCase):
 
         response = self.client.post(
             '/api/auth/logout',
-            headers=dict(
-                Authorization='Bearer ' + auth_token
-            )
+            headers={'Authorization' : 'Bearer ' + auth_token}
         )
         data = response.json
         self.assertEqual(data['status'], 'fail')
@@ -175,9 +167,7 @@ class TestLogout(BaseTestCase):
 
         response = self.client.post(
             '/api/auth/logout',
-            headers=dict(
-                Authorization='Bearer ' + auth_token
-            )
+            headers={'Authorization' : 'Bearer ' + auth_token}
         )
         data = response.json
         self.assertEqual(data['status'], 'success')
@@ -186,9 +176,7 @@ class TestLogout(BaseTestCase):
 
         response = self.client.post(
             '/api/auth/logout',
-            headers=dict(
-                Authorization='Bearer ' + auth_token
-            )
+            headers={'Authorization' : 'Bearer ' + auth_token}
         )
         data = response.json
         self.assertEqual(data['status'], 'fail')
