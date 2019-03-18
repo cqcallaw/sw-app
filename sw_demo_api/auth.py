@@ -86,6 +86,30 @@ def login_handler():  # pylint: disable=too-many-return-statements
     }
     return make_response(jsonify(response)), 200
 
+def logout_handler():
+    """ Handle logout """
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        response = {
+            'status': 'fail',
+            'message': 'Logout requires Authorization header.'
+        }
+        return make_response(jsonify(response)), 400
+
+    auth_token = auth_header.split(" ")[1]
+
+    if not auth_token:
+        response = {
+            'status': 'fail',
+            'message': 'Logout requires valid auth token in Authorization header.'
+        }
+        return make_response(jsonify(response)), 400
+    response = {
+        'status': 'fail',
+        'message': 'Failed to log out.'
+    }
+    return make_response(jsonify(response)), 500
+
 def encode_auth_token(app, user_id):
     """
     Generates the Auth Token

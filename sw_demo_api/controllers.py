@@ -2,7 +2,7 @@
 import flask_restless
 from sw_demo_api.models import Role, User
 from sw_demo_api.extensions import DATABASE_INSTANCE
-from sw_demo_api.auth import login_handler, encode_auth_token
+from sw_demo_api.auth import login_handler, logout_handler, encode_auth_token
 
 def init(app):
     """ Initialize controllers """
@@ -38,6 +38,7 @@ def init(app):
         app.register_blueprint(user_api_blueprint)
 
         app.add_url_rule('/api/auth/login', view_func=login_handler, methods=['POST'])
+        app.add_url_rule('/api/auth/logout', view_func=logout_handler, methods=['POST'])
 
 def check_auth_many(app, search_params=None, data=None, **kwargs):
     """ Check authentication status """

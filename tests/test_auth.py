@@ -4,7 +4,20 @@ import json
 # from sw_demo_api.models import User
 from tests.base import BaseTestCase
 
-class TestAuth(BaseTestCase):
+def login_user(client, user_id, password):
+    """ Helper function for user login """
+    return client.post(
+        '/api/auth/login',
+        content_type='application/json',
+        data=json.dumps(
+            {
+                'user_id': user_id,
+                'password': password
+            }
+        )
+    )
+
+class TestLogin(BaseTestCase):
     """ Test authentication """
     def test_wrong_content_type(self):
         """ Test for wrong content type """
@@ -39,16 +52,7 @@ class TestAuth(BaseTestCase):
 
     def test_invalid_login_id(self):
         """ Test for invalid user """
-        response = self.client.post(
-            '/api/auth/login',
-            content_type='application/json',
-            data=json.dumps(
-                {
-                    'user_id': 'nemo',
-                    'password': 'fake'
-                }
-            )
-        )
+        response = login_user(self.client, 'nemo', 'fake')
 
         self.assertEqual(response.status_code, 400)
         data = response.json
@@ -56,16 +60,7 @@ class TestAuth(BaseTestCase):
 
     def test_invalid_login_password(self):
         """ Test for invalid password """
-        response = self.client.post(
-            '/api/auth/login',
-            content_type='application/json',
-            data=json.dumps(
-                {
-                    'user_id': 'user',
-                    'password': 'fake'
-                }
-            )
-        )
+        response = login_user(self.client, 'user', 'fake')
 
         self.assertEqual(response.status_code, 400)
         data = response.json
@@ -73,21 +68,41 @@ class TestAuth(BaseTestCase):
 
     def test_valid_login(self):
         """ Test for valid login user """
-        response = self.client.post(
-            '/api/auth/login',
-            content_type='application/json',
-            data=json.dumps(
-                {
-                    'user_id': 'user',
-                    'password': 'user'
-                }
-            )
-        )
+        response = login_user(self.client, 'user', 'user')
 
         self.assertEqual(response.status_code, 200)
         response_data = response.json
         self.assertIn('auth_token', response_data)
         self.assertIsNotNone(response_data['auth_token'])
+
+class TestLogout(BaseTestCase):
+    """ Test logout functions """
+
+    def test_no_auth_header(self):
+        """ Test logout without Authentication header """
+        response = self.client.post(
+            '/api/auth/logout'
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json
+        self.assertEqual(data['message'], 'Logout requires Authorization header.')
+
+
+    """ Test logout with malformed Authentication header """
+    """ Test logout for invalid user """
+    """ Test logout after timeout """
+    """ Test double logout """
+    """ Test for valid logout"""
+
+    # def test_valid_logout(self):
+    #     """ Test for valid logout"""
+    #     response = login_user(self.client, 'user', 'user')
+
+    #     self.assertEqual(response.status_code, 200)
+    #     response_data = response.json
+    #     self.assertIn('auth_token', response_data)
+    #     self.assertIsNotNone(response_data['auth_token'])
 
 if __name__ == '__main__':
     unittest.main()
