@@ -17,6 +17,17 @@ def login_user(client, user_id, password):
         )
     )
 
+def validate_user_login(test, response):
+    """ Validate user login and return auth token """
+    test.assertEqual(response.status_code, 200)
+    response_data = response.json
+    test.assertIn('auth_token', response_data)
+    auth_token = response_data['auth_token']
+    test.assertIsNotNone(auth_token)
+
+    return auth_token
+
+
 class TestLogin(BaseTestCase):
     """ Test authentication """
     def test_wrong_content_type(self):
@@ -120,11 +131,7 @@ class TestLogout(BaseTestCase):
     def test_valid_logout(self):
         """ Test for valid logout"""
         login_response = login_user(self.client, 'user', 'user')
-        self.assertEqual(login_response.status_code, 200)
-        login_response_data = login_response.json
-        self.assertIn('auth_token', login_response_data)
-        auth_token = login_response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, login_response)
 
         response = self.client.post(
             '/api/auth/logout',
@@ -138,11 +145,7 @@ class TestLogout(BaseTestCase):
     def test_timed_out_token(self):
         """ Test logout after timeout """
         login_response = login_user(self.client, 'user', 'user')
-        self.assertEqual(login_response.status_code, 200)
-        login_response_data = login_response.json
-        self.assertIn('auth_token', login_response_data)
-        auth_token = login_response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, login_response)
 
         # wait for token to expire
         time.sleep(6)
@@ -159,11 +162,7 @@ class TestLogout(BaseTestCase):
     def test_blacklisted_token(self):
         """ Test logout for blacklisted token """
         login_response = login_user(self.client, 'user', 'user')
-        self.assertEqual(login_response.status_code, 200)
-        login_response_data = login_response.json
-        self.assertIn('auth_token', login_response_data)
-        auth_token = login_response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, login_response)
 
         response = self.client.post(
             '/api/auth/logout',

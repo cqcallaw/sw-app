@@ -1,7 +1,7 @@
 """ Test basic user functions """
 import json
 from tests.base import BaseTestCase
-from tests.test_auth import login_user
+from tests.test_auth import login_user, validate_user_login
 from sw_demo_api.models import User
 
 class TestUser(BaseTestCase):
@@ -78,12 +78,7 @@ class TestUser(BaseTestCase):
     def test_modify_user_wrong_user(self):
         """ Test basic wrong user PATCH """
         response = login_user(self.client, 'user', 'user')
-
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json
-        self.assertIn('auth_token', response_data)
-        auth_token = response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, response)
 
         data = {'name': 'New User'}
 
@@ -98,12 +93,7 @@ class TestUser(BaseTestCase):
     def test_modify_user(self):
         """ Test basic user PATCH """
         response = login_user(self.client, 'user', 'user')
-
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json
-        self.assertIn('auth_token', response_data)
-        auth_token = response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, response)
 
         data = {'name': 'New User Name'}
 
@@ -121,12 +111,7 @@ class TestUser(BaseTestCase):
     def test_modify_user_no_privilege_escalation(self):
         """ Test user can't make themself admin """
         response = login_user(self.client, 'user', 'user')
-
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json
-        self.assertIn('auth_token', response_data)
-        auth_token = response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, response)
 
         data = {
             'roles': {
@@ -149,12 +134,7 @@ class TestUser(BaseTestCase):
     def test_modify_user_admin_assign(self):
         """ Test that admins can raise other admins """
         response = login_user(self.client, 'admin', 'admin')
-
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json
-        self.assertIn('auth_token', response_data)
-        auth_token = response_data['auth_token']
-        self.assertIsNotNone(auth_token)
+        auth_token = validate_user_login(self, response)
 
         data = {
             'roles': {
