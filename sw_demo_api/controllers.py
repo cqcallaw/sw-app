@@ -75,10 +75,14 @@ def check_role_mod(app):
     if not is_admin(current_user):
         raise flask_restless.ProcessingException(description='Not Authorized', code=401)
 
-def check_user_mod_many(app, search_params=None, data=None, **kwargs):
+def check_user_mod_many(app, search_params=None, data=None, **kwargs):  # pylint: disable=unused-argument
     """ Check authentication status """
-    # TODO: check for is_admin
-    raise flask_restless.ProcessingException(description='Not Authorized', code=401)
+    current_user = validate_current_user(
+        app.config['SECRET_KEY'],
+        request.headers.get('Authorization')
+    )
+    if not is_admin(current_user):
+        raise flask_restless.ProcessingException(description='Not Authorized', code=401)
 
 def check_user_mod(app, instance_id=None, data=None, **kw): # pylint: disable=unused-argument
     """ Check authentication status """
