@@ -69,7 +69,11 @@ def create_user_auth_token(app, result=None, **kw): # pylint: disable=unused-arg
     We do this as post-processing so it will be included in the response
     even though auth tokens shouldn't ordinarily be part of user views
     """
-    auth_token = encode_auth_token(app.config['SECRET_KEY'], result['user_id'])
+    auth_token = encode_auth_token(
+        app.config['SECRET_KEY'],
+        app.config['AUTH_TOKEN_TIMEOUT'],
+        result['user_id']
+    )
     if auth_token:
         user = User.query.filter(User.user_id == result['user_id']).first()
         user.auth_token = auth_token.decode()

@@ -14,6 +14,7 @@ class BaseConfig:
     SAMPLE_DATA = False
     DATABASE_NAME = BASE_DATABASE_NAME
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_NAME
+    AUTH_TOKEN_TIMEOUT = 5
 
 class Development(BaseConfig):
     """Development configuration."""
