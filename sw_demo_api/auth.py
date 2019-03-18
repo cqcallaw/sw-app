@@ -68,7 +68,7 @@ def login_handler():  # pylint: disable=too-many-return-statements
         }
         return make_response(jsonify(response)), 400
 
-    auth_token = encode_auth_token(current_app, user.user_id)
+    auth_token = encode_auth_token(current_app.config['SECRET_KEY'], user.user_id)
     if not auth_token:
         response = {
             'status': 'fail',
@@ -110,7 +110,7 @@ def logout_handler():
     }
     return make_response(jsonify(response)), 500
 
-def encode_auth_token(app, user_id):
+def encode_auth_token(secret_key, user_id):
     """
     Generates the Auth Token
     :return: string
@@ -122,18 +122,18 @@ def encode_auth_token(app, user_id):
     }
     return jwt.encode(
         payload,
-        app.config['SECRET_KEY'],
+        secret_key,
         algorithm='HS256'
     )
 
-def decode_auth_token(app, auth_token):
+def decode_auth_token(secret_key, auth_token):
     """
     Decodes the auth token
     :param auth_token:
     :return: integer|string
     """
     try:
-        payload = jwt.decode(auth_token, app.config['SECRET_KEY'])
+        payload = jwt.decode(auth_token, secret_key)
         return payload['sub']
     except jwt.ExpiredSignatureError:
         return 'Signature expired. Please log in again.'

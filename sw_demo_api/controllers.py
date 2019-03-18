@@ -20,15 +20,29 @@ def init(app):
             include_columns=['user_id', 'name', 'roles'],
             preprocessors={
                 'PATCH_SINGLE': [
-                    lambda instance_id, data, **kw: check_auth(app, instance_id, data, **kw)
+                    lambda instance_id, data, **kw: check_auth(
+                        app,
+                        instance_id,
+                        data,
+                        **kw
+                    )
                 ],
                 'PATCH_MANY': [
-                    lambda params, data, **kw: check_auth_many(app, params, data, **kw)
+                    lambda params, data, **kw: check_auth_many(
+                        app,
+                        params,
+                        data,
+                        **kw
+                    )
                 ]
             },
             postprocessors={
                 'POST': [
-                    lambda result, **kw: create_user_auth_token(app, result, **kw)
+                    lambda result, **kw: create_user_auth_token(
+                        app,
+                        result,
+                        **kw
+                    )
                 ],
             }
 
@@ -55,7 +69,7 @@ def create_user_auth_token(app, result=None, **kw): # pylint: disable=unused-arg
     We do this as post-processing so it will be included in the response
     even though auth tokens shouldn't ordinarily be part of user views
     """
-    auth_token = encode_auth_token(app, result['user_id'])
+    auth_token = encode_auth_token(app.config['SECRET_KEY'], result['user_id'])
     if auth_token:
         user = User.query.filter(User.user_id == result['user_id']).first()
         user.auth_token = auth_token.decode()
