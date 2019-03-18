@@ -1,7 +1,7 @@
 """ Authentication tests """
 import unittest
 import json
-# from sw_demo_api.models import User
+import time
 from tests.base import BaseTestCase
 
 def login_user(client, user_id, password):
@@ -143,11 +143,57 @@ class TestLogout(BaseTestCase):
 
     def test_timed_out_token(self):
         """ Test logout after timeout """
-        self.assertFalse(True)
+        login_response = login_user(self.client, 'user', 'user')
+        self.assertEqual(login_response.status_code, 200)
+        login_response_data = login_response.json
+        self.assertIn('auth_token', login_response_data)
+        auth_token = login_response_data['auth_token']
+        self.assertIsNotNone(auth_token)
+
+        # wait for token to expire
+        time.sleep(6)
+
+        response = self.client.post(
+            '/api/auth/logout',
+            headers=dict(
+                Authorization='Bearer ' + auth_token
+            )
+        )
+        data = response.json
+        self.assertEqual(data['status'], 'fail')
+        self.assertEqual(data['message'], 'Signature expired. Please log in again.')
+        self.assertEqual(response.status_code, 400)
 
     def test_blacklisted_token(self):
         """ Test logout for blacklisted token """
-        self.assertFalse(True)
+        login_response = login_user(self.client, 'user', 'user')
+        self.assertEqual(login_response.status_code, 200)
+        login_response_data = login_response.json
+        self.assertIn('auth_token', login_response_data)
+        auth_token = login_response_data['auth_token']
+        self.assertIsNotNone(auth_token)
+
+        response = self.client.post(
+            '/api/auth/logout',
+            headers=dict(
+                Authorization='Bearer ' + auth_token
+            )
+        )
+        data = response.json
+        self.assertEqual(data['status'], 'success')
+        self.assertEqual(data['message'], 'Log out successful.')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            '/api/auth/logout',
+            headers=dict(
+                Authorization='Bearer ' + auth_token
+            )
+        )
+        data = response.json
+        self.assertEqual(data['status'], 'fail')
+        self.assertEqual(data['message'], 'Token blacklisted. Please log in again.')
+        self.assertEqual(response.status_code, 401)
 
 if __name__ == '__main__':
     unittest.main()

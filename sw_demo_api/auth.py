@@ -117,6 +117,14 @@ def logout_handler():
         }
         return make_response(jsonify(response)), 400
 
+    existing_blacklist_entry = BlacklistToken.query.filter_by(token=decoded_token).first()
+    if existing_blacklist_entry:
+        response = {
+            'status': 'fail',
+            'message': 'Token blacklisted. Please log in again.'
+        }
+        return make_response(jsonify(response)), 401
+
     blacklist_token = BlacklistToken(token=decoded_token)
     DATABASE_INSTANCE.session.add(blacklist_token)
     DATABASE_INSTANCE.session.commit()
