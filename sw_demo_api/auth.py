@@ -1,7 +1,7 @@
 """ Authentication """
 import datetime
-import jwt
 import re
+import jwt
 from flask import current_app, request, make_response, jsonify
 from sw_demo_api.models import User
 from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE

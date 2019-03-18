@@ -1,5 +1,5 @@
 """ Configuration data """
-
+# pylint: disable=too-few-public-methods
 import os
 
 BASE_DATABASE_NAME = 'sw_demo_api.sqlite'

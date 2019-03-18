@@ -121,20 +121,17 @@ class TestLogout(BaseTestCase):
             'Invalid token. Please log in again.'
         )
 
-    """ Test logout for blacklisted token """
-    """ Test logout for invalid user """
-    """ Test logout after timeout """
-    """ Test double logout """
-    """ Test for valid logout"""
+    def test_blacklisted_token(self):
+        """ Test logout for blacklisted token """
 
-    # def test_valid_logout(self):
-    #     """ Test for valid logout"""
-    #     response = login_user(self.client, 'user', 'user')
+    def test_timed_out_token(self):
+        """ Test logout after timeout """
 
-    #     self.assertEqual(response.status_code, 200)
-    #     response_data = response.json
-    #     self.assertIn('auth_token', response_data)
-    #     self.assertIsNotNone(response_data['auth_token'])
+    def test_valid_logout(self):
+        """ Test for valid logout"""
+
+    def test_double_logout(self):
+        """ Test logout after timeout """
 
 if __name__ == '__main__':
     unittest.main()
