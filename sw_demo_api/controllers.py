@@ -84,8 +84,20 @@ def check_user_mod(app, instance_id=None, data=None, **kw): # pylint: disable=un
             code=400
         )
 
-    if not can_modify(current_user, mod_subject):
-        raise flask_restless.ProcessingException(description='Operation not allowed', code=401)
+    if 'roles' in data:
+        if not is_admin(current_user):
+            raise flask_restless.ProcessingException(description='Only admins may edit roles', code=401)
+    else:
+        # check general modification constraints
+        if not can_modify(current_user, mod_subject):
+            raise flask_restless.ProcessingException(description='Operation not allowed', code=401)
+
+def is_admin(user: User):
+    for role in user.roles:
+        if role.role_id == 'admin':
+            return True
+
+    return False
 
 def can_modify(current_user: User, subject: User):
     """
@@ -95,9 +107,8 @@ def can_modify(current_user: User, subject: User):
     if current_user.user_id == subject.user_id:
         return True # users can modify their own accounts
 
-    for user_role in current_user.roles:
-        if user_role.role_id == 'admin':
-            return True # admins can always mod
+    if is_admin(current_user):
+        return True # admins can always mod
 
     return False
 

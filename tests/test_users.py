@@ -117,3 +117,60 @@ class TestUser(BaseTestCase):
 
         user = User.query.filter(User.user_id == 'user').first()
         self.assertEqual(user.name, 'New User Name')
+
+    def test_modify_user_no_privilege_escalation(self):
+        """ Test user can't make themself admin """
+        response = login_user(self.client, 'user', 'user')
+
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json
+        self.assertIn('auth_token', response_data)
+        auth_token = response_data['auth_token']
+        self.assertIsNotNone(auth_token)
+
+        data = {
+            'roles': {
+                'add': [{'role_id': 'admin'}]
+            }
+        }
+
+        response = self.client.patch(
+            '/api/users/user',
+            data=json.dumps(data),
+            content_type='application/json',
+            headers={'Authorization' : 'Bearer ' + auth_token}
+        )
+        self.assertEqual(response.status_code, 401)
+
+        user = User.query.filter(User.user_id == 'user').first()
+        self.assertEqual(len(user.roles), 1)
+        self.assertEqual(user.roles[0].role_id, 'users')
+
+    def test_modify_user_admin_assign(self):
+        """ Test that admins can raise other admins """
+        response = login_user(self.client, 'admin', 'admin')
+
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json
+        self.assertIn('auth_token', response_data)
+        auth_token = response_data['auth_token']
+        self.assertIsNotNone(auth_token)
+
+        data = {
+            'roles': {
+                'add': [{'role_id': 'admin'}]
+            }
+        }
+
+        response = self.client.patch(
+            '/api/users/user',
+            data=json.dumps(data),
+            content_type='application/json',
+            headers={'Authorization' : 'Bearer ' + auth_token}
+        )
+        self.assertEqual(response.status_code, 200)
+
+        user = User.query.filter(User.user_id == 'user').first()
+        self.assertEqual(len(user.roles), 2)
+        self.assertEqual(user.roles[0].role_id, 'users')
+        self.assertEqual(user.roles[1].role_id, 'admin')
