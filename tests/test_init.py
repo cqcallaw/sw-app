@@ -10,5 +10,5 @@ class TestConfig(BaseTestCase):
         self.assertTrue(app.config['DEBUG'])
         self.assertTrue(app.config['TESTING'])
         self.assertTrue(
-            app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:///testing_sw_demo_api.sqlite'
+            app.config['SQLALCHEMY_DATABASE_URI'] == 'sqlite:///testing_auth_demo.sqlite'
         )

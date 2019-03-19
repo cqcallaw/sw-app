@@ -2,7 +2,7 @@
 # pylint: disable=too-few-public-methods
 import os
 
-BASE_DATABASE_NAME = 'sw_demo_api.sqlite'
+BASE_DATABASE_NAME = 'auth_demo.sqlite'
 
 class BaseConfig:
     """Base configuration."""

@@ -2,7 +2,7 @@
 import json
 from tests.base import BaseTestCase
 from tests.test_auth import login_user, validate_user_login
-from sw_demo_api.models import User
+from auth_demo.models import User
 
 class TestUser(BaseTestCase):
     """ Test basic app configuration """

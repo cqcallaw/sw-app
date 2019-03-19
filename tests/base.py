@@ -1,7 +1,7 @@
 """ SW Demo test fixtures """
 import os
 from flask_testing import TestCase
-from sw_demo_api import create_app
+from auth_demo import create_app
 
 class BaseTestCase(TestCase):
     """ Base Tests """
@@ -11,7 +11,7 @@ class BaseTestCase(TestCase):
         self.client = None
 
     def create_app(self):
-        os.environ['APP_SETTINGS'] = 'sw_demo_api.config.Testing'
+        os.environ['APP_SETTINGS'] = 'auth_demo.config.Testing'
         self.app_instance = create_app()
         return self.app_instance
 
@@ -21,6 +21,6 @@ class BaseTestCase(TestCase):
 
     def tearDown(self):
         db_path = self.app.config['DATABASE_NAME']
-        db_file_system_path = os.path.realpath(os.path.join('sw_demo_api', db_path))
+        db_file_system_path = os.path.realpath(os.path.join('auth_demo', db_path))
         if os.path.exists(db_file_system_path):
             os.remove(db_file_system_path)

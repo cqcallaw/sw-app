@@ -1,10 +1,10 @@
 """ SW Demo REST API """
 import os
 import flask
-import sw_demo_api.extensions
-import sw_demo_api.db
-import sw_demo_api.controllers
-import sw_demo_api.config
+import auth_demo.extensions
+import auth_demo.db
+import auth_demo.controllers
+import auth_demo.config
 
 def create_app(test_config=None):
     """ Create the Flask app for the SW demo REST API """
@@ -14,7 +14,7 @@ def create_app(test_config=None):
         # source config based on environment variable or default
         app_settings = os.getenv(
             'APP_SETTINGS',
-            'sw_demo_api.config.Development'
+            'auth_demo.config.Development'
         )
         app.config.from_object(app_settings)
     else:
@@ -27,10 +27,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    sw_demo_api.extensions.register_extensions(app)
+    auth_demo.extensions.register_extensions(app)
 
-    sw_demo_api.db.init(app)
+    auth_demo.db.init(app)
 
-    sw_demo_api.controllers.init(app)
+    auth_demo.controllers.init(app)
 
     return app

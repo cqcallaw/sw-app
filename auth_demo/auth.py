@@ -3,8 +3,8 @@ import datetime
 import re
 import jwt
 from flask import current_app, request, make_response, jsonify
-from sw_demo_api.models import User, BlacklistToken
-from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
+from auth_demo.models import User, BlacklistToken
+from auth_demo.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
 def login_handler():  # pylint: disable=too-many-return-statements
     """ Handle Login POST """

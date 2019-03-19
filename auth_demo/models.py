@@ -3,7 +3,7 @@
 import datetime
 from sqlalchemy import ForeignKey, Column, Unicode, Integer, String, DateTime
 from sqlalchemy.orm import relationship
-from sw_demo_api.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
+from auth_demo.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
 class Role(DATABASE_INSTANCE.Model):
     """ DB model for user role """

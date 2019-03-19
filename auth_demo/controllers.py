@@ -1,9 +1,9 @@
 """ REST API Controllers """
 from flask import request
 import flask_restless
-from sw_demo_api.models import Role, User
-from sw_demo_api.extensions import DATABASE_INSTANCE
-from sw_demo_api.auth import login_handler, logout_handler, encode_auth_token, process_auth_header
+from auth_demo.models import Role, User
+from auth_demo.extensions import DATABASE_INSTANCE
+from auth_demo.auth import login_handler, logout_handler, encode_auth_token, process_auth_header
 
 def init(app):
     """ Initialize controllers """

@@ -1,13 +1,13 @@
 """ Database helpers """
 import os
-from sw_demo_api.models import User, Role, BlacklistToken  # pylint: disable=unused-import
-from sw_demo_api.extensions import DATABASE_INSTANCE
+from auth_demo.models import User, Role, BlacklistToken  # pylint: disable=unused-import
+from auth_demo.extensions import DATABASE_INSTANCE
 
 def init(app):
     """ Init DB """
     if app.config['DB_PURGE']:
         db_path = app.config['DATABASE_NAME']
-        db_file_system_path = os.path.realpath(os.path.join('sw_demo_api', db_path))
+        db_file_system_path = os.path.realpath(os.path.join('auth_demo', db_path))
         if os.path.exists(db_file_system_path):
             os.remove(db_file_system_path)
 
