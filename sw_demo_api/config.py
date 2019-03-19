@@ -14,7 +14,7 @@ class BaseConfig:
     SAMPLE_DATA = False
     DATABASE_NAME = BASE_DATABASE_NAME
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_NAME
-    AUTH_TOKEN_TIMEOUT = 5
+    AUTH_TOKEN_TIMEOUT = 2592000 # default to 30 day timeout
 
 class Development(BaseConfig):
     """Development configuration."""
@@ -22,6 +22,7 @@ class Development(BaseConfig):
     DEBUG = True
     DB_PURGE = True
     SAMPLE_DATA = True
+    AUTH_TOKEN_TIMEOUT = 86400 # 24 hours
 
 class Testing(Development):
     """Testing configuration."""
@@ -30,3 +31,4 @@ class Testing(Development):
     DATABASE_NAME = 'testing_' + BASE_DATABASE_NAME
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_NAME
     PRESERVE_CONTEXT_ON_EXCEPTION = False # ref: https://stackoverflow.com/a/28139033/577298
+    AUTH_TOKEN_TIMEOUT = 5
