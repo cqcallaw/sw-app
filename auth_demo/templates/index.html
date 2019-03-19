@@ -1,4 +1,5 @@
-<!doctype html>
-<title>Auth Demo</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<h1 class='header'>Welcome!</h1>
+{% extends "base.html" %}
+{% block header %}Welcome!{% endblock %}
+{% block content %}
+<p style="text-align: center"><a href="/login">Login</a> | <a href="/register">Register</a></p>
+{% endblock %}

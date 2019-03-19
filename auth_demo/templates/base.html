@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Auth Demo</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <h1 id='banner'>{% block header %}{% endblock %}</h1>
+        <div id="content">
+            {% block content %}[content here]{% endblock %}
+        </div>
+        <div id="footer">{% block footer %}Copyright © 2019 Caleb Callaway{% endblock %}</div>
+    </body>
+</html>
