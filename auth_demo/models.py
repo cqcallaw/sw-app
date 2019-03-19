@@ -1,7 +1,7 @@
 """ SW Demo REST API database models """
 # pylint: disable=too-few-public-methods
 import datetime
-from sqlalchemy import ForeignKey, Column, Unicode, Integer, String, DateTime
+from sqlalchemy import ForeignKey, Column, Unicode, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from auth_demo.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
@@ -27,15 +27,19 @@ class User(DATABASE_INSTANCE.Model):
     name = Column(Unicode)
     password = Column(Unicode, nullable=False)
     auth_token = Column(Unicode)
+    is_authenticated = Column(Boolean, nullable=False)
+    is_active = Column(Boolean, nullable=False)
     roles = relationship(
         'Role',
         secondary='user_roles'
     )
 
-    def __init__(self, user_id, name, password, **kwargs):
+    def __init__(self, user_id, name, password, is_authenticated=False, is_active=True, **kwargs):
         self.user_id = user_id
         self.name = name
         self.password = BCRYPT_HANDLE.generate_password_hash(password).decode()
+        self.is_authenticated = is_authenticated
+        self.is_active = is_active
         if 'roles' in kwargs:
             self.roles = kwargs['roles']
         if 'blacklisted_tokens' in kwargs:
@@ -43,6 +47,15 @@ class User(DATABASE_INSTANCE.Model):
 
     def __repr__(self):
         return "<User(id='%s', name='%s')>" % (self.user_id, self.name)
+
+    @property
+    def is_anonymous(self):
+        """ Flask-login required property """
+        return False
+
+    def get_id(self):
+        """ Flask-login required method """
+        return self.user_id
 
 class UserRoles(DATABASE_INSTANCE.Model):
     """ DB model for M:N relationship between users and roles """
