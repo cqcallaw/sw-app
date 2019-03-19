@@ -3,7 +3,7 @@ from flask import request
 import flask_restless
 from auth_demo.models import Role, User
 from auth_demo.extensions import DATABASE_INSTANCE
-from auth_demo.auth import login_handler, logout_handler, encode_auth_token, process_auth_header
+from auth_demo.api.auth import login_handler, logout_handler, encode_auth_token, process_auth_header
 
 def init(app):
     """ Initialize controllers """
