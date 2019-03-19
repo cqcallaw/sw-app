@@ -3,6 +3,7 @@ import os
 import flask
 import auth_demo.extensions
 import auth_demo.db
+import auth_demo.controllers
 import auth_demo.api.controllers
 import auth_demo.config
 
@@ -32,5 +33,6 @@ def create_app(test_config=None):
     auth_demo.db.init(app)
 
     auth_demo.api.controllers.init(app)
+    auth_demo.controllers.init(app)
 
     return app
