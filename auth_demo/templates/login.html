@@ -6,8 +6,8 @@
     <div class="center">
         <p>{{ form.user_id(size=32, placeholder='user id') }}</p>
         <p>{{ form.password(size=32, placeholder='password') }}</p>
-        <p id="error"></p>
-        <input type="button" onclick="submit_form()" value="Submit" />
+        <p id="message"></p>
+        <input type="button" onclick="submit_form()" value="Login" />
     </div>
 </form>
 <script type="text/javascript">
@@ -30,12 +30,14 @@ function submit_form()
         }),
         success: function(data, status) {
             console.log("Login success!")
+            $('#message').text('Login success!')
+            document.location.replace('/')
         },
         error: function(xhr, text, status) {
             const reponse_as_json = jQuery.parseJSON(xhr.responseText)
             const message = reponse_as_json['message']
             console.log('Login failure: ' + message)
-            $('#error').text('ERROR: ' + message)
+            $('#message').text('ERROR: ' + message)
         }
     })
     console.log('Login submitted.')
