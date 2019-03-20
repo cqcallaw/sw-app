@@ -25,5 +25,19 @@ div#content {
 
 div#footer {
     text-align: center;
-    font-size: .5em;
+    font-size: .75em;
+}
+
+ul#user-list {
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+
+.field {
+    font-weight: bold;
+}
+
+.field:after {
+    content: ":";
 }

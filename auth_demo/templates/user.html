@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block header %}User Information{% endblock %}
+{% block content %}
+<div id="user">
+    <p><span class="field">ID</span> {{ user_definition.user_id }}</p>
+    <p><span class="field">Name</span> {{ user_definition.name }}</p>
+</div>
+{% endblock %}

@@ -1,10 +1,10 @@
 """ App controllers """
 from urllib.parse import urlparse, urljoin
 import flask
-from flask_login import login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user, login_required
 from auth_demo.models import User
 from auth_demo.extensions import LOGIN_MANAGER, BCRYPT_HANDLE
-from auth_demo.forms import LoginForm
+from auth_demo.forms import LoginForm, RegistrationForm
 
 def init(app):
     """ Init app controllers """
@@ -14,12 +14,16 @@ def init(app):
         app.add_url_rule('/logout', view_func=logout, methods=['GET'])
         app.add_url_rule('/register', view_func=register, methods=['GET'])
         app.add_url_rule('/users', view_func=users, methods=['GET'])
-        app.add_url_rule('/users<string:user_id>', view_func=user, methods=['GET'])
+        app.add_url_rule('/users/<string:user_id>', view_func=user, methods=['GET'])
         app.add_url_rule('/register', view_func=register, methods=['GET'])
 
 def base():
     """ Base URL handler """
-    return flask.render_template('index.html')
+    user_list = None
+    if current_user.is_authenticated:
+        user_list = User.query.all()
+
+    return flask.render_template('index.html', user_list=user_list)
 
 def login():
     """ Handle user login """
@@ -53,14 +57,42 @@ def logout():
 
 def register():
     """ Register handler """
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user_id = flask.request.form['user_id']
+        user_name = flask.request.form['name']
+        password = flask.request.form['password']
+
+        subject = User.query.get(user_id)
+
+        if subject:
+            return flask.render_template('register.html', form=form, error='user already exists')
+
+        return flask.abort(400)
+        login_user(subject)
+
+        redirect_url = flask.request.args.get('next')
+        if not is_safe_url(redirect_url):
+            return flask.abort(400)
+
+        return flask.redirect(redirect_url or flask.url_for('base'))
+
+    return flask.render_template('register.html', form=form)
 
 @login_required
 def users():
     """ Users view handler """
+    return flask.redirect(flask.url_for('base'))
 
 @login_required
-def user():
+def user(user_id):
     """ User view handler """
+    user_definition = User.query.get(user_id)
+
+    if not user_definition:
+        return 'User %s not found' % user_id, 404
+
+    return flask.render_template('user.html', user_definition=user_definition)
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):

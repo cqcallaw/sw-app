@@ -8,3 +8,10 @@ class LoginForm(FlaskForm):
     user_id = StringField('Username')
     password = PasswordField('Password')
     submit = SubmitField('Submit')
+
+class RegistrationForm(FlaskForm):
+    """ Registration Form """
+    user_id = StringField('Username')
+    name = StringField('Username')
+    password = PasswordField('Password')
+    submit = SubmitField('Submit')
