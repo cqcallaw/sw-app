@@ -12,6 +12,7 @@ $ virtualenv venv # setup virtual environment
 $ source venv/bin/activate # activiate virtual environment
 $ pip install -e . # install dependencies
 $ nosetests # run tests
+$ pylint auth_demo tests # run linting
 $ export FLASK_ENV='development'; export FLASK_APP='auth_demo'; flask run # run app
 ```
 
