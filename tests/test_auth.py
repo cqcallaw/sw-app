@@ -1,7 +1,7 @@
 """ Authentication tests """
 import unittest
 import json
-import time
+from auth_demo.models import User
 from tests.base import BaseTestCase
 
 def login_user(client, user_id, password):
@@ -21,12 +21,8 @@ def validate_user_login(test, response):
     """ Validate user login and return auth token """
     test.assertEqual(response.status_code, 200)
     response_data = response.json
-    test.assertIn('auth_token', response_data)
-    auth_token = response_data['auth_token']
-    test.assertIsNotNone(auth_token)
-
-    return auth_token
-
+    test.assertIn('status', response_data)
+    test.assertEqual(response_data['status'], 'success')
 
 class TestLogin(BaseTestCase):
     """ Test authentication """
@@ -41,7 +37,7 @@ class TestLogin(BaseTestCase):
         data = response.json
         self.assertEqual(
             data['message'],
-            'Login submission does not specific content type (must be application/json).'
+            'Login submission does not specific content type.'
         )
 
     def test_malformed_login(self):
@@ -82,105 +78,24 @@ class TestLogin(BaseTestCase):
         response = login_user(self.client, 'user', 'user')
 
         self.assertEqual(response.status_code, 200)
-        response_data = response.json
-        self.assertIn('auth_token', response_data)
-        self.assertIsNotNone(response_data['auth_token'])
+        user = User.query.get('user')
+        self.assertTrue(user.is_authenticated)
 
 class TestLogout(BaseTestCase):
     """ Test logout functions """
 
-    def test_no_auth_header(self):
-        """ Test logout without Authentication header """
-        response = self.client.post(
-            '/api/auth/logout'
-        )
-
-        self.assertEqual(response.status_code, 400)
-        data = response.json
-        self.assertEqual(data['message'], 'Operation requires Authorization header.')
-
-
-    def test_invalid_auth_header(self):
-        """ Test logout with malformed Authentication header """
-        response = self.client.post(
-            '/api/auth/logout',
-            headers={'Authorization' : 'Blah'}
-        )
-
-        self.assertEqual(response.status_code, 400)
-        data = response.json
-        self.assertEqual(
-            data['message'],
-            'Operation requires valid auth token in Authorization header.'
-        )
-
-    def test_invalid_auth_token(self):
-        """ Test logout for invalid token """
-        response = self.client.post(
-            '/api/auth/logout',
-            headers={'Authorization' : 'Bearer gobllegook'}
-        )
-
-        self.assertEqual(response.status_code, 400)
-        data = response.json
-        self.assertEqual(
-            data['message'],
-            'Invalid token. Please log in again.'
-        )
-
     def test_valid_logout(self):
         """ Test for valid logout"""
         login_response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, login_response)
+        validate_user_login(self, login_response)
 
         response = self.client.post(
-            '/api/auth/logout',
-            headers={'Authorization' : 'Bearer ' + auth_token}
+            '/api/auth/logout'
         )
         data = response.json
         self.assertEqual(data['status'], 'success')
         self.assertEqual(data['message'], 'Log out successful.')
         self.assertEqual(response.status_code, 200)
-
-    def test_timed_out_token(self):
-        """ Test logout after timeout """
-        login_response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, login_response)
-
-        # wait for token to expire
-        time.sleep(6)
-
-        response = self.client.post(
-            '/api/auth/logout',
-            headers={'Authorization' : 'Bearer ' + auth_token}
-        )
-        data = response.json
-        self.assertEqual(data['status'], 'fail')
-        self.assertEqual(data['message'], 'Signature expired. Please log in again.')
-        self.assertEqual(response.status_code, 400)
-
-    def test_blacklisted_token(self):
-        """ Test logout for blacklisted token """
-        login_response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, login_response)
-
-        response = self.client.post(
-            '/api/auth/logout',
-            headers={'Authorization' : 'Bearer ' + auth_token}
-        )
-        data = response.json
-        self.assertEqual(data['status'], 'success')
-        self.assertEqual(data['message'], 'Log out successful.')
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(
-            '/api/auth/logout',
-            headers={'Authorization' : 'Bearer ' + auth_token}
-        )
-        data = response.json
-        self.assertEqual(data['status'], 'fail')
-        self.assertEqual(data['message'], 'Token blacklisted. Please log in again.')
-        self.assertEqual(response.status_code, 401)
 
 if __name__ == '__main__':
     unittest.main()

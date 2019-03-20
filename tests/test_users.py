@@ -30,9 +30,6 @@ class TestUser(BaseTestCase):
         )
 
         self.assertEqual(response.status_code, 201)
-        response_data = response.json
-        self.assertIn('auth_token', response_data)
-        self.assertIsNotNone(response_data['auth_token'])
 
     def test_create_user_duplicate(self):
         """ Test basic user POST """
@@ -62,7 +59,7 @@ class TestUser(BaseTestCase):
             data=json.dumps(data),
             content_type='application/json',
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_modify_invalid_user(self):
         """ Test basic user PATCH, invalid user"""
@@ -78,22 +75,25 @@ class TestUser(BaseTestCase):
     def test_modify_user_wrong_user(self):
         """ Test basic wrong user PATCH """
         response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, response)
+        validate_user_login(self, response)
 
         data = {'name': 'New User'}
 
-        response = self.client.patch(
-            '/api/users/alice',
-            data=json.dumps(data),
-            content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
-        )
-        self.assertEqual(response.status_code, 401)
+        with self.client.session_transaction() as session:
+            session['user_id'] = 'user'
+            session['_fresh'] = True
+
+            response = self.client.patch(
+                '/api/users/alice',
+                data=json.dumps(data),
+                content_type='application/json'
+            )
+            self.assertEqual(response.status_code, 401)
 
     def test_modify_user(self):
         """ Test basic user PATCH """
         response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, response)
+        validate_user_login(self, response)
 
         data = {'name': 'New User Name'}
 
@@ -101,17 +101,16 @@ class TestUser(BaseTestCase):
             '/api/users/user',
             data=json.dumps(data),
             content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
         )
         self.assertEqual(response.status_code, 200)
 
-        user = User.query.filter(User.user_id == 'user').first()
+        user = User.query.get('user')
         self.assertEqual(user.name, 'New User Name')
 
     def test_modify_user_no_privilege_escalation(self):
         """ Test user can't make themself admin """
         response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, response)
+        validate_user_login(self, response)
 
         data = {
             'roles': {
@@ -122,19 +121,18 @@ class TestUser(BaseTestCase):
         response = self.client.patch(
             '/api/users/user',
             data=json.dumps(data),
-            content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
+            content_type='application/json'
         )
         self.assertEqual(response.status_code, 401)
 
-        user = User.query.filter(User.user_id == 'user').first()
+        user = User.query.get('user')
         self.assertEqual(len(user.roles), 1)
         self.assertEqual(user.roles[0].role_id, 'users')
 
     def test_modify_user_admin_assign(self):
         """ Test that admins can raise other admins """
         response = login_user(self.client, 'admin', 'admin')
-        auth_token = validate_user_login(self, response)
+        validate_user_login(self, response)
 
         data = {
             'roles': {
@@ -142,15 +140,18 @@ class TestUser(BaseTestCase):
             }
         }
 
-        response = self.client.patch(
-            '/api/users/user',
-            data=json.dumps(data),
-            content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
-        )
-        self.assertEqual(response.status_code, 200)
+        with self.client.session_transaction() as session:
+            session['user_id'] = 'user'
+            session['_fresh'] = True
 
-        user = User.query.filter(User.user_id == 'user').first()
-        self.assertEqual(len(user.roles), 2)
-        self.assertEqual(user.roles[0].role_id, 'users')
-        self.assertEqual(user.roles[1].role_id, 'admin')
+            response = self.client.patch(
+                '/api/users/user',
+                data=json.dumps(data),
+                content_type='application/json'
+            )
+            self.assertEqual(response.status_code, 200)
+
+            user = User.query.get('user')
+            self.assertEqual(len(user.roles), 2)
+            self.assertEqual(user.roles[0].role_id, 'users')
+            self.assertEqual(user.roles[1].role_id, 'admin')

@@ -23,28 +23,12 @@ class TestRole(BaseTestCase):
             content_type='application/json',
         )
 
-        self.assertEqual(response.status_code, 400)
-
-    def test_modify_role_unauthorized(self):
-        """ Test role modification from unprivileged account """
-        response = login_user(self.client, 'user', 'user')
-        auth_token = validate_user_login(self, response)
-
-        data = {'name': 'New Name'}
-
-        response = self.client.patch(
-            '/api/roles/users',
-            data=json.dumps(data),
-            content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
-        )
-
         self.assertEqual(response.status_code, 401)
 
     def test_create_role(self):
         """ Test role creation """
         response = login_user(self.client, 'admin', 'admin')
-        auth_token = validate_user_login(self, response)
+        validate_user_login(self, response)
 
         data = {
             'role_id': 'backup',
@@ -54,8 +38,7 @@ class TestRole(BaseTestCase):
         response = self.client.post(
             '/api/roles',
             data=json.dumps(data),
-            content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
+            content_type='application/json'
         )
 
         self.assertEqual(response.status_code, 201)
@@ -63,15 +46,29 @@ class TestRole(BaseTestCase):
     def test_modify_role(self):
         """ Test role modification from admin account """
         response = login_user(self.client, 'admin', 'admin')
-        auth_token = validate_user_login(self, response)
+        validate_user_login(self, response)
 
         data = {'description': 'New Name'}
 
         response = self.client.patch(
             '/api/roles/users',
             data=json.dumps(data),
-            content_type='application/json',
-            headers={'Authorization' : 'Bearer ' + auth_token}
+            content_type='application/json'
         )
 
         self.assertEqual(response.status_code, 200)
+
+    def test_modify_role_unauthorized(self):
+        """ Test role modification from unprivileged account """
+        response = login_user(self.client, 'user', 'user')
+        validate_user_login(self, response)
+
+        data = {'description': 'New Name'}
+
+        response = self.client.patch(
+            '/api/roles/users',
+            data=json.dumps(data),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 401)

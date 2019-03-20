@@ -1,6 +1,6 @@
 """ Database helpers """
 import os
-from auth_demo.models import User, Role, BlacklistToken  # pylint: disable=unused-import
+from auth_demo.models import User, Role
 from auth_demo.extensions import DATABASE_INSTANCE
 
 def init(app):
