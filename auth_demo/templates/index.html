@@ -1,5 +1,16 @@
 {% extends "base.html" %}
-{% block header %}Welcome!{% endblock %}
+{% block header %}
+{% if current_user.is_authenticated %}
+Welcome {{ current_user.name }}!
+{% else %}
+Welcome!
+{% endif %}
+{% endblock %}
 {% block content %}
-<p style="text-align: center"><a href="/login">Login</a> | <a href="/register">Register</a></p>
+{% if current_user.is_anonymous %}
+<p class="center"><a href="/login">Login</a> | <a href="/register">Register</a></p>
+{% else %}
+<p class="right"><a href="/logout">Logout</a></p>
+<p>Stuff!</p>
+{% endif %}
 {% endblock %}

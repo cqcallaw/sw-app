@@ -1,6 +1,6 @@
 """ SW Demo REST API database models """
 # pylint: disable=too-few-public-methods
-from sqlalchemy import ForeignKey, Column, Unicode, Integer, String, DateTime, Boolean
+from sqlalchemy import ForeignKey, Column, Unicode
 from sqlalchemy.orm import relationship
 from auth_demo.extensions import DATABASE_INSTANCE, BCRYPT_HANDLE
 
