@@ -12,10 +12,6 @@ html {
     text-align: right;
 }
 
-h1#banner {
-    text-align: center;
-}
-
 div#content {
     border-top: solid 1px black;
     width: 50%;
@@ -27,6 +23,14 @@ div#content {
 div#footer {
     text-align: center;
     font-size: .75em;
+}
+
+h1#banner {
+    text-align: center;
+}
+
+p#message {
+    text-align: center;
 }
 
 ul#user-list {

@@ -4,11 +4,13 @@
         <title>Auth Demo</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="{{ url_for('static', filename='main.js') }}"></script>
     </head>
     <body>
         <h1 id='banner'>{% block header %}{% endblock %}</h1>
         <div id="content">
             {% block content %}[content here]{% endblock %}
+            <p id="message"></p>
         </div>
         <div id="footer">{% block footer %}Copyright © 2019 Caleb Callaway{% endblock %}</div>
     </body>
