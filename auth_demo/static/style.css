@@ -13,10 +13,11 @@ html {
 }
 
 h1#banner {
-    text-align: center
+    text-align: center;
 }
 
 div#content {
+    border-top: solid 1px black;
     width: 50%;
     margin-left: auto ;
     margin-right: auto ;

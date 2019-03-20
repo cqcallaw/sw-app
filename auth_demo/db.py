@@ -30,7 +30,7 @@ def gen_sample_data(app):
             roles=[admin_role, user_role]
         )
 
-        plain_user = User(user_id='user', name='A user', password='user', roles=[user_role])
+        plain_user = User(user_id='user', name='User', password='user', roles=[user_role])
         alice = User(user_id='alice', name='Alice', password='a', roles=[user_role])
         bob = User(user_id='bob', name='Bob', password='b', roles=[user_role])
         eve = User(user_id='eve', name='Eve', password='e', roles=[user_role])
