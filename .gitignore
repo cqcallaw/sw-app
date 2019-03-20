@@ -4,3 +4,4 @@ venv
 sandbox.py
 *.sqlite
 instance
+*.egg-info
