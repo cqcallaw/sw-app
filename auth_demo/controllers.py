@@ -3,7 +3,7 @@ from urllib.parse import urlparse, urljoin
 import flask
 from flask_login import current_user, login_user, logout_user, login_required
 from auth_demo.models import User
-from auth_demo.extensions import LOGIN_MANAGER, BCRYPT_HANDLE
+from auth_demo.extensions import LOGIN_MANAGER
 from auth_demo.forms import LoginForm, RegistrationForm
 
 def init(app):
@@ -28,25 +28,25 @@ def base():
 def login():
     """ Handle user login """
     form = LoginForm()
-    if form.validate_on_submit():
-        user_id = flask.request.form['user_id']
-        password = flask.request.form['password']
+    # if form.validate_on_submit():
+    #     user_id = flask.request.form['user_id']
+    #     password = flask.request.form['password']
 
-        subject = User.query.get(user_id)
+    #     subject = User.query.get(user_id)
 
-        if not subject:
-            return flask.render_template('login.html', form=form, error='unknown user')
+    #     if not subject:
+    #         return flask.render_template('login.html', form=form, error='unknown user')
 
-        if not BCRYPT_HANDLE.check_password_hash(subject.password, password):
-            return flask.render_template('login.html', form=form, error='invalid password')
+    #     if not BCRYPT_HANDLE.check_password_hash(subject.password, password):
+    #         return flask.render_template('login.html', form=form, error='invalid password')
 
-        login_user(subject)
+    #     login_user(subject)
 
-        redirect_url = flask.request.args.get('next')
-        if not is_safe_url(redirect_url):
-            return flask.abort(400)
+    #     redirect_url = flask.request.args.get('next')
+    #     if not is_safe_url(redirect_url):
+    #         return flask.abort(400)
 
-        return flask.redirect(redirect_url or flask.url_for('base'))
+    #     return flask.redirect(redirect_url or flask.url_for('base'))
 
     return flask.render_template('login.html', form=form)
 

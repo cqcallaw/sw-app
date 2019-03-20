@@ -70,14 +70,14 @@ def api_login():  # pylint: disable=too-many-return-statements
     user_id = 'UNKNOWN_USER'
     password = 'INVALID_PASSWORD'
 
-    if content_type == 'application/json':
+    if 'application/json' in content_type:
         post_data = request.get_json()
 
         user_id = post_data.get('user_id')
         password = post_data.get('password')
-    elif content_type == 'application/x-www-form-urlencoded':
-        user_id = request.form['username']
-        password = request.form['password']
+    # elif content_type == 'application/x-www-form-urlencoded':
+    #     user_id = request.form['username']
+    #     password = request.form['password']
     else:
         response = {
             'status': 'fail',

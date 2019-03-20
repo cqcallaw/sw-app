@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block header %}Sign In{% endblock %}
 {% block content %}
-<form action="" method="post" novalidate>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<form id="login_form" action="/api/auth/login" method="post" novalidate>
     {{ form.hidden_tag() }}
     <div class="center">
         <p>{{ form.user_id(size=32, placeholder='user id') }}</p>
@@ -9,7 +10,52 @@
         {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
         {% endif %}
-        <p>{{ form.submit() }}</p>
+        <!-- <p>{{ form.submit() }}</p> -->
+        <!-- <a href="javascript: submitform(document.login_form)">Login</a> -->
+        <input type="button" onclick="submit_form()" value="Submit" />
     </div>
 </form>
+<script type="text/javascript">
+function submit_form()
+{
+    // document.getElementById("login_form").submit();
+    console.log('Submitting form...')
+    const form = document.getElementById("login_form");
+    $.ajax({
+        url: form.action,
+        method: 'POST',
+        headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+        },
+        data: {
+            'user_id': 'form.user_id',
+            'password': 'form.password'
+        },
+        success: function(data, status) {
+            console.log("Data: " + data + "\nStatus: " + status)
+        }
+    }).fail(
+        function () {
+            console.log('Request failed!')
+        }
+    );
+    /*const form = document.getElementById("login_form");
+    const form_action = form.action
+
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        if (request.readyState === 4) {
+            console.log(this.responseText);
+        }
+    };
+    request.open("POST", form.action, true);
+    request.setRequestHeader("Content-type", "application/json");
+    request.send({
+        'user_id': 'nobody',
+        'password': 'nothing'
+    });*/
+    console.log('Form submitted.')
+}
+</script>
 {% endblock %}
