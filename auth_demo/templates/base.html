@@ -9,11 +9,6 @@
     <body>
         <h1 id='banner'>{% block header %}{% endblock %}</h1>
         <div id="content">
-            {% if current_user.is_anonymous %}
-            <p class="center"><a href="/login">Login</a> | <a href="/register">Register</a></p>
-            {% else %}
-            <p class="right"><input type="button" onclick="logout()" value="Logout" /></p>
-            {% endif %}
             {% block content %}[content here]{% endblock %}
             <p id="message"></p>
         </div>

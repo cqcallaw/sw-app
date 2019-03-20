@@ -7,5 +7,11 @@ Welcome!
 {% endif %}
 {% endblock %}
 {% block content %}
-<ul id="user-list" />
+{% if current_user.is_anonymous %}
+<p class="center"><a href="/login">Login</a> | <a href="/register">Register</a></p>
+{% else %}
+<p class="right"><input type="button" onclick="logout()" value="Logout" /></p>
+<ul id="user_list" />
+<script>$( document ).ready(function() { load_user_list() });</script>
+{% endif %}
 {% endblock %}

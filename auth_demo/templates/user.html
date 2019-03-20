@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block header %}User Information{% endblock %}
 {% block content %}
+{% if current_user.is_authenticated %}
+<p class="right"><input type="button" onclick="logout()" value="Logout" /></p>
+{% endif %}
 <div id="user">
     <p><span class="field">ID</span> {{ user_definition.user_id }}</p>
     <p><span class="field">Name</span> {{ user_definition.name }}</p>
