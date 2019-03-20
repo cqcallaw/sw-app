@@ -4,6 +4,10 @@ html {
     padding: 1rem;
 }
 
+.center {
+    text-align: center;
+}
+
 h1#banner {
     text-align: center
 }

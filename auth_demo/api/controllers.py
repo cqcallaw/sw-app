@@ -53,10 +53,10 @@ def init(app):
         app.register_blueprint(role_api_blueprint)
         app.register_blueprint(user_api_blueprint)
 
-        app.add_url_rule('/api/auth/login', view_func=login_handler, methods=['POST'])
-        app.add_url_rule('/api/auth/logout', view_func=logout_handler, methods=['POST'])
+        app.add_url_rule('/api/auth/login', view_func=api_login_handler, methods=['POST'])
+        app.add_url_rule('/api/auth/logout', view_func=api_logout_handler, methods=['POST'])
 
-def login_handler():  # pylint: disable=too-many-return-statements
+def api_login_handler():  # pylint: disable=too-many-return-statements
     """ Handle Login POST """
     content_type = request.headers['Content-Type']
 
@@ -123,7 +123,7 @@ def login_handler():  # pylint: disable=too-many-return-statements
     }
     return make_response(jsonify(response)), 200
 
-def logout_handler():
+def api_logout_handler():
     """ Handle logout """
     logout_user()
     response = {
