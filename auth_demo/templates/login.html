@@ -1,17 +1,12 @@
 {% extends "base.html" %}
 {% block header %}Sign In{% endblock %}
 {% block content %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <form id="login_form" action="/api/auth/login" method="post" novalidate>
     {{ form.hidden_tag() }}
     <div class="center">
         <p>{{ form.user_id(size=32, placeholder='user id') }}</p>
         <p>{{ form.password(size=32, placeholder='password') }}</p>
-        {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}
-        {% endif %}
-        <!-- <p>{{ form.submit() }}</p> -->
-        <!-- <a href="javascript: submitform(document.login_form)">Login</a> -->
+        <p id="error"></p>
         <input type="button" onclick="submit_form()" value="Submit" />
     </div>
 </form>
@@ -19,13 +14,11 @@
 function submit_form()
 {
     console.log('Logging in...')
-    console.log
-    const form = $('#login_form')[0];
+    const form = $('#login_form')[0]
     const user_id = $('#user_id').val()
     const password = $('#password').val()
     console.log('Using form action ' + form.action)
     console.log('User ID: ' + user_id)
-    console.log('Password: ' + password)
     $.ajax({
         url: form.action,
         method: 'POST',
@@ -37,12 +30,14 @@ function submit_form()
         }),
         success: function(data, status) {
             console.log("Login success!")
+        },
+        error: function(xhr, text, status) {
+            const reponse_as_json = jQuery.parseJSON(xhr.responseText)
+            const message = reponse_as_json['message']
+            console.log('Login failure: ' + message)
+            $('#error').text('ERROR: ' + message)
         }
-    }).fail(
-        function () {
-            console.log('Login failure!')
-        }
-    );
+    })
     console.log('Login submitted.')
 }
 </script>
