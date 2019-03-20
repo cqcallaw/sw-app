@@ -3,6 +3,12 @@ function log_message(message) {
     $('#message').text(message)
 }
 
+function log_api_error(xhr, text, status) {
+    const reponse_as_json = jQuery.parseJSON(xhr.responseText)
+    const message = reponse_as_json['message']
+    log_message('ERROR: ' + reponse_as_json['message'])
+}
+
 function login()
 {
     console.log('Logging in...')
@@ -24,10 +30,7 @@ function login()
             log_message('Login success')
             document.location.replace('/')
         },
-        error: function(xhr, text, status) {
-            const reponse_as_json = jQuery.parseJSON(xhr.responseText)
-            log_message('ERROR: ' + reponse_as_json['message'])
-        }
+        error: log_api_error
     })
     console.log('Login submitted.')
 }
@@ -41,10 +44,30 @@ function logout() {
             log_message("Logout succeeded")
             document.location.replace('/')
         },
-        error: function(xhr, text, status) {
-            const reponse_as_json = jQuery.parseJSON(xhr.responseText)
-            log_message('ERROR: ' + reponse_as_json['message'])
-        }
+        error: log_api_error
     })
 }
 
+function register() {
+    console.log('Registering user...')
+    const form = $('#registration_form')[0]
+    const user_id = $('#user_id').val()
+    const name = $('#name').val()
+    const password = $('#password').val()
+    $.ajax({
+        url: form.action,
+        method: 'POST',
+        contentType: "application/json",
+        dataType: 'json',
+        data: JSON.stringify ({
+            'user_id': user_id,
+            'name': name,
+            'password': password
+        }),
+        success: function(data, status) {
+            log_message("Registration successful")
+            document.location.replace('/')
+        },
+        error: log_api_error
+    })
+}
