@@ -1,3 +1,8 @@
+function log_message(message) {
+    console.log(message)
+    $('#message').text(message)
+}
+
 function login()
 {
     console.log('Logging in...')
@@ -16,15 +21,12 @@ function login()
             'password': password
         }),
         success: function(data, status) {
-            console.log("Login success!")
-            $('#message').text('Login success!')
+            log_message('Login success')
             document.location.replace('/')
         },
         error: function(xhr, text, status) {
             const reponse_as_json = jQuery.parseJSON(xhr.responseText)
-            const message = reponse_as_json['message']
-            console.log('Login failure: ' + message)
-            $('#message').text('ERROR: ' + message)
+            log_message('ERROR: ' + reponse_as_json['message'])
         }
     })
     console.log('Login submitted.')
@@ -36,15 +38,13 @@ function logout() {
         url: '/api/auth/logout',
         method: 'POST',
         success: function(data, status) {
-            console.log("Logout success!")
-            $('#message').text('Logout success!')
+            log_message("Logout succeeded")
             document.location.replace('/')
         },
         error: function(xhr, text, status) {
             const reponse_as_json = jQuery.parseJSON(xhr.responseText)
-            const message = reponse_as_json['message']
-            console.log('Logout failure: ' + message)
-            $('#message').text('ERROR: ' + message)
+            log_message('ERROR: ' + reponse_as_json['message'])
         }
     })
 }
+
