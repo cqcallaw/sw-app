@@ -35,6 +35,7 @@ setup(
         'mccabe==0.6.1',
         'mimerender==0.6.0',
         'more-itertools==6.0.0',
+        'nose',
         'pathlib2==2.3.3',
         'pluggy==0.9.0',
         'py==1.8.0',
