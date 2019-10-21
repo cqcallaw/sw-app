@@ -48,7 +48,7 @@ setup(
         'SQLAlchemy==1.3.1',
         'typed-ast==1.3.1',
         'urllib3==1.24.1',
-        'Werkzeug==0.14.1',
+        'Werkzeug==0.15.3',
         'wrapt'
     ],
 )
