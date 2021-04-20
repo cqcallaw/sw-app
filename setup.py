@@ -38,7 +38,7 @@ setup(
         'nose',
         'pathlib2==2.3.3',
         'pluggy==0.9.0',
-        'py==1.8.0',
+        'py==1.10.0',
         'pycparser==2.19',
         'python-dateutil==2.8.0',
         'python-mimeparse==1.6.0',
