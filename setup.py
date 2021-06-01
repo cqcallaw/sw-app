@@ -47,7 +47,7 @@ setup(
         'six==1.12.0',
         'SQLAlchemy==1.3.1',
         'typed-ast==1.3.1',
-        'urllib3==1.24.1',
+        'urllib3==1.26.5',
         'Werkzeug==0.14.1',
         'wrapt'
     ],
